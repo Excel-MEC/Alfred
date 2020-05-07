@@ -1,0 +1,29 @@
+stages:
+    - test
+    - build
+  
+test:
+    image: node:13.5.0-alpine
+    stage: test
+    script:
+        - cd client
+        - yarn
+        - CI=false yarn build
+    only:
+        - master
+    except:
+        - master@excel-mec/Alfred
+
+build_client:
+    image: node:13.5.0-alpine
+    stage: build
+    script:
+        - cd client
+        - yarn
+        - CI=false yarn build
+    artifacts:
+        expire_in: 1 week
+        paths:
+        - build
+    only:
+        - master@excel-mec/Alfred
