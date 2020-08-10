@@ -21,16 +21,7 @@
     >
     </iframe>
     
-    <script>
-        function receiveMessage(event) {
-            if (typeof event.data == 'string' && event.data.length !== 0) {
-                window.jwt = event.data;
-            } else if (event.data === null) {
-                window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
-            }
-        }
-        window.addEventListener("message", receiveMessage);
-    </script>
+    <script src="js/script.js"></script>
 
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>

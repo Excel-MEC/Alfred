@@ -1,0 +1,58 @@
+﻿@using Alfred.Client.Services.Interfaces
+@using Alfred.Client.Models
+@inject IAuthService AuthService
+@inject IJSRuntime JsRuntime
+
+@if (User != null)
+{
+    if (authenticated)
+    {
+        @ChildContent
+    }
+    else
+    {
+        <h1 align="center">Sorry you are not authorized to view this page</h1>
+    }
+}
+else
+{
+    <span @onclick="ReAuthorize">
+      <Login/>
+    </span>
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Roles { get; set; }
+
+    User User;
+    bool authenticated = false;
+
+    public async Task ReAuthorize()
+    {
+        await JsRuntime.InvokeVoidAsync("reload");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.Authorize();
+        User = AuthService.User;
+        if (User != null)
+        {
+            Roles ??= "User";
+            var userRoles = User.Roles;
+            foreach (var role in Roles.Split(",").Select(x => x.Trim()))
+            {
+                if (userRoles.Contains(role))
+                {
+                    authenticated = true;
+                }
+            }
+        }
+    }
+
+}
