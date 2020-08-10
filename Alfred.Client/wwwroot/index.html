@@ -7,18 +7,33 @@
     <title>Alfred.Client</title>
     <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/software-base.css">
     <link href="css/app.css" rel="stylesheet" />
 </head>
 
 <body>
     <app>Loading...</app>
+    <iframe
+            title="authorize"
+            style="display: none"
+    id="content"
+    src="https://staging.accounts.excelmec.org/auth/authorize"
+    >
+    </iframe>
+    
+    <script>
+        function receiveMessage(event) {
+            if (typeof event.data == 'string' && event.data.length !== 0) {
+                window.jwt = event.data;
+            } else if (event.data === null) {
+                window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
+            }
+        }
+        window.addEventListener("message", receiveMessage);
+    </script>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 </body>
 
 </html>
