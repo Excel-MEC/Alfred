@@ -2,6 +2,8 @@
 # .NET Core build folders
 bin/
 obj/
+build/
+publish/
 
 # Jetbrains Rider
 .idea/

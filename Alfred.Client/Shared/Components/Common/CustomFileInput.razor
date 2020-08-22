@@ -1,0 +1,31 @@
+﻿@using System.IO
+@using Alfred.Client.Models.Components
+@using Tewr.Blazor.FileReader
+@inject IFileReaderService FileReader
+
+<input type="file" @ref="_inputReference" @onchange="async () => await OpenFileAsync()"/>
+
+@code{
+    [Parameter]
+    public CustomFile File{ get; set; }
+
+    private ElementReference _inputReference;
+
+    async Task OpenFileAsync()
+    {
+        var file = (await FileReader.CreateReference(_inputReference).EnumerateFilesAsync()).FirstOrDefault();
+
+        if (file == null)
+            return;
+
+        var fileInfo = await file.ReadFileInfoAsync();
+        File.Name = fileInfo.Name;
+        File.Size = $"{fileInfo.Size}b";
+        File.Type = fileInfo.Type;
+
+        using (var ms = await file.CreateMemoryStreamAsync((int) fileInfo.Size))
+        {
+            File.Data = new MemoryStream(ms.ToArray());
+        }
+    }
+}

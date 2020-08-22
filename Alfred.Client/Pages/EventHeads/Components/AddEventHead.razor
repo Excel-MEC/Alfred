@@ -1,0 +1,120 @@
+﻿@using Alfred.Client.Models
+@using Alfred.Client.Models.Components
+@using Alfred.Client.Services.Interfaces
+@using Tewr.Blazor.FileReader
+@using Alfred.Client.Dtos.Events
+@inject IApiService ApiService
+@inject IFileReaderService FileReader
+@inject NotificationService Notification
+@inject DialogService Dialog
+
+
+<RadzenTemplateForm Data="@_eventHead" Submit="@(async (EventHead args) => { await Submit(args); })">
+    <div class="row">
+        <div class="col-md-12">
+            <RadzenFieldset Text="Data">
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Name"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox style="width: 100%;" @bind-value="_eventHead.Name"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Email"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox style="width: 100%;" @bind-value="_eventHead.Email"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Phone"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox style="width: 100%;" @bind-value="_eventHead.PhoneNumber"/>
+                    </div>
+                </div>
+
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save"/>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</RadzenTemplateForm>
+
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+<style>
+    .row{
+        margin-top: 10px;
+    }
+</style>
+
+@code{
+    EventHead _eventHead = new EventHead();
+    bool _loading = false;
+
+    async Task Submit(EventHead newEventHead)
+    {
+        _loading = true;
+        NotificationMessage message;
+        try
+        {
+            var client = await ApiService.Client();
+            var response = await client.PostAsJsonAsync("/events/api/eventHead", newEventHead);
+            if (response.IsSuccessStatusCode)
+            {
+                message = new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = "Successfully Added new Highlight",
+                    Duration = 4000
+                };
+            }
+            else
+            {
+                message = new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Failed",
+                    Detail = "Something Went Wrong",
+                    Duration = 4000
+                };
+            }
+            client.Dispose();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+                message = new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Failed",
+                    Detail = "Something Went Wrong",
+                    Duration = 4000
+                };
+
+        }
+        Notification.Notify(message);
+        Cancel();
+        _loading = false;
+    }
+
+    void Cancel()
+    {
+        _eventHead = new EventHead();
+        Dialog.Close();
+    }
+}

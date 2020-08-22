@@ -1,0 +1,64 @@
+﻿@using Alfred.Client.Dtos.Events
+@inject IConstantRepository ConstantRepo
+<RadzenFieldset Text="Schedule">
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Venue"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextBox style="width: 100%;" @bind-value="NewEvent.Venue"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Day"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenNumeric style="width:100%" @bind-Value="@NewEvent.Day" Placeholder="Enter or clear"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Date Time"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDatePicker ShowTime="true" style="width:100%" Name="EventDateTime" @bind-Value="NewEvent.Datetime" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Number of Rounds"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@NewEvent.NumberOfRounds" Placeholder="Enter or clear"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Current Round"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@NewEvent.CurrentRound" Placeholder="Enter or clear"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Status"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDropDown @bind-Value="NewEvent.EventStatusId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventStatus.Select(eventStatus => new {Id = ConstantRepo.EventType.IndexOf(eventStatus), Value = eventStatus})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
+            </RadzenDropDown>
+        </div>
+    </div>
+
+</RadzenFieldset>
+
+@code{
+    [Parameter]
+    public DataForAddingEventDto NewEvent { get; set; }
+}

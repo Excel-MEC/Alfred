@@ -1,0 +1,132 @@
+﻿@using Alfred.Client.Models
+@using Alfred.Client.Models.Components
+@using Alfred.Client.Services.Interfaces
+@using Tewr.Blazor.FileReader
+@implements IDisposable
+@inject IApiService ApiService
+@inject IFileReaderService FileReader
+@inject IJSRuntime JsRuntime
+@inject NotificationService Notification
+@inject DialogService Dialog
+
+
+<RadzenTemplateForm Data="@_highlight" Submit="@(async (Highlight args) => { await Submit(args); })">
+    <div class="row">
+        <div class="col-md-12">
+            <RadzenFieldset Text="Data">
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Name"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox style="width: 100%;" @bind-value="_highlight.Name"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Image"/>
+                    </div>
+                    <div class="col-md-9">
+                        <CustomFileInput File="@_image" />
+                    </div>
+                </div>
+
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save"/>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</RadzenTemplateForm>
+
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+<style>
+    .row{
+        margin-top: 10px;
+    }
+</style>
+
+@code{
+    Highlight _highlight = new Highlight();
+    CustomFile _image;
+    bool _loading = false;
+
+    protected override void OnInitialized()
+    {
+        _image = new CustomFile();
+    }
+
+
+    async Task Submit(Highlight newHighlight)
+    {
+        _loading = true;
+        NotificationMessage message;
+        try
+        {
+            var client = await ApiService.Client();
+            var content = new MultipartFormDataContent();
+            content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+            content.Add(new StreamContent(_image.Data, (int) _image.Data.Length), "Image", _image.Name);
+            content.Add(new StringContent(newHighlight.Name), "Name");
+            var response = await client.PostAsync("/events/api/highlights", content);
+            if (response.IsSuccessStatusCode)
+            {
+                message = new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = "Successfully Added new Highlight",
+                    Duration = 4000
+                };
+            }
+            else
+            {
+                message = new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Failed",
+                    Detail = "Something Went Wrong",
+                    Duration = 4000
+                };
+            }
+            client.Dispose();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+                message = new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Failed",
+                    Detail = "Something Went Wrong",
+                    Duration = 4000
+                };
+
+        }
+        Notification.Notify(message);
+        Cancel();
+        _loading = false;
+    }
+
+    void Cancel()
+    {
+        _image.Data?.Dispose();
+        _image = new CustomFile();
+        _highlight = new Highlight();
+        Dialog.Close();
+    }
+
+    public void Dispose()
+    {
+        _image.Data?.Dispose();
+    }
+
+}

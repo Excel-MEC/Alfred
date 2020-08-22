@@ -1,5 +1,5 @@
-﻿@using System.Collections.Generic
-@using Alfred.Client.Models.Components
+﻿@using Alfred.Client.Models.Components
+@using Radzen.Blazor
 @inherits Microsoft.AspNetCore.Components.LayoutComponentBase
 <RadzenHeader class="bg-dark text-light border-0">
     <ChildContent>
@@ -19,6 +19,8 @@
     <RadzenBody @bind-Expanded="@_bodyExpanded">
         <ChildContent>
             <RadzenContentContainer Name="main">
+                <RadzenNotification />
+                <RadzenDialog />
                 @Body
             </RadzenContentContainer>
         </ChildContent>
@@ -30,6 +32,13 @@
             @foreach (var item in _menu)
             {
                 <RadzenPanelMenuItem Text="@item.Text" Path="@item.Path" Icon="@item.Icon">
+                    @if (item.Children != null)
+                    {
+                        @foreach (var childItem in item.Children)
+                        {
+                            <RadzenPanelMenuItem Text="@childItem.Text" Path="@childItem.Path" Icon="@childItem.Icon"/>
+                        }
+                    }
                 </RadzenPanelMenuItem>
             }
         </RadzenPanelMenu>
@@ -66,9 +75,38 @@
         new MenuItem()
         {
             Text = "Events",
-            Path = "/Events",
             Icon = "extension",
-            Children = null
+            Children = new List<MenuItem>()
+            {
+                new MenuItem()
+                {
+                    Text = "List Events",
+                    Path = "/Events",
+                    Icon = "list",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "Add Event",
+                    Path = "/Events/Add",
+                    Icon = "add_shopping_cart",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "Event Heads",
+                    Path = "/Events/EventHeads",
+                    Icon = "contact_phone",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "Highlights",
+                    Path = "/Events/Highlights",
+                    Icon = "photo_album",
+                    Children = null
+                }
+            }
         },
         new MenuItem()
         {

@@ -1,0 +1,65 @@
+﻿@page "/Events"
+@using Alfred.Client.Dtos.Events
+@using Alfred.Client.Services.Interfaces
+@inject IConstantRepository ConstantRepo
+@inject IJSRuntime JsRuntime
+@inject IApiService ApiService
+
+<AuthorizedView Roles="Admin">
+    <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8"
+                AllowSorting="true" Data="@_events.Where(e => _currentEventType == "All" || _currentEventType == e.EventType).Where(e => _currentCategory == "All" || _currentCategory == e.Category)" TItem="EventForListViewDto">
+        <Columns>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Id" Title="Id"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Name" Title="Name"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Icon" Title="Icon" Filterable="false" Sortable="false">
+                <Template Context="data">
+                    <RadzenImage Path="@data?.Icon" style="max-height: 80px"/>
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="EventType" Title="Event Type">
+                <FilterTemplate>
+                    <RadzenDropDown @bind-Value="@_currentEventType" TextProperty="Text" ValueProperty="Value" Style="width:100%" Data="@_eventType"/>
+                </FilterTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Category" Title="Category">
+                <FilterTemplate>
+                    <RadzenDropDown @bind-Value="@_currentCategory" TextProperty="Text" ValueProperty="Value" Style="width:100%" Data="@_category"/>
+                </FilterTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="NeedRegistration" Title="Need Registration"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Day" Title="Day"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false"/>
+        </Columns>
+    </RadzenGrid>
+</AuthorizedView>
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+
+@code {
+    List<EventForListViewDto> _events = new List<EventForListViewDto>();
+    string _currentEventType;
+    string _currentCategory;
+    List<string> _eventType;
+    List<string> _category;
+    bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        var client = await ApiService.Client();
+        _events = await client.GetFromJsonAsync<List<EventForListViewDto>>("/events/api/events");
+        _eventType = ConstantRepo.EventType.Select(x => x).ToList();
+        _category = ConstantRepo.Category.Select(x => x).ToList();
+
+        _eventType.Add("All");
+        _category.Add("All");
+        _currentEventType = "All";
+        _currentCategory = "All";
+        client.Dispose();
+        _loading = false;
+    }
+
+}

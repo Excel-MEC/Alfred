@@ -1,0 +1,89 @@
+﻿@using Alfred.Client.Dtos.Events
+<RadzenFieldset Text="More Details">
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Entry Fee"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@NewEvent.EntryFee" Placeholder="Enter or clear"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Prize Money"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@NewEvent.PrizeMoney" Placeholder="Enter or clear"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 align-items-center d-flex">
+            <RadzenCheckBox class="bool" @bind-Value="@NewEvent.NeedRegistration" TValue="bool"/>
+            <RadzenLabel Text="Need Registration"/>
+        </div>
+        <div class="col-md-6 align-items-center d-flex">
+            <RadzenCheckBox class="bool" @bind-Value="@NewEvent.IsTeam" TValue="bool"/>
+            <RadzenLabel Text="Is Team"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Head 1"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDropDownDataGrid TValue="int"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    AllowFiltering="true" AllowClear="true"
+                                    Data="@EventHeads"
+                                    TextProperty="Name" ValueProperty="Id"
+                                    Style="width:100%"
+                                    PlaceHolder="Select"
+                                    Change="@(args => SetEventHead(1, (int) args))">
+                <Columns>
+                    <RadzenDropDownDataGridColumn Property="Id" Title="Id" width="40px"/>
+                    <RadzenDropDownDataGridColumn Property="Name" Title="Name"/>
+                    <RadzenDropDownDataGridColumn Property="PhoneNumber" Title="PhoneNumber"/>
+                </Columns>
+            </RadzenDropDownDataGrid>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Head 2"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDropDownDataGrid TValue="int"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    AllowFiltering="true" AllowClear="true"
+                                    Data="@EventHeads"
+                                    TextProperty="Name" ValueProperty="Id"
+                                    Style="width:100%"
+                                    PlaceHolder="Select"
+                                    Change="@(args => SetEventHead(2, (int) args))">
+                <Columns>
+                    <RadzenDropDownDataGridColumn Property="Id" Title="Id" width="40px"/>
+                    <RadzenDropDownDataGridColumn Property="Name" Title="Name"/>
+                    <RadzenDropDownDataGridColumn Property="PhoneNumber" Title="PhoneNumber"/>
+                </Columns>
+            </RadzenDropDownDataGrid>
+        </div>
+    </div>
+</RadzenFieldset>
+
+@code{
+
+    [Parameter]
+    public DataForAddingEventDto NewEvent { get; set; }
+
+    [Parameter]
+    public List<EventHead> EventHeads { get; set; }
+
+    void SetEventHead(int n, int id)
+    {
+        if (n == 1) NewEvent.EventHead1Id = id;
+        else NewEvent.EventHead2Id = id;
+    }
+
+}

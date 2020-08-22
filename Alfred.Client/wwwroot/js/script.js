@@ -5,16 +5,40 @@
         window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
     }
 }
+
 window.addEventListener("message", receiveMessage);
-function getJwt(){
+
+function getJwt() {
     return window.jwt;
 }
 
-window.reload = function(){
+window.reload = function () {
     window.location.href = window.location;
 }
-window.getJwt = getJwt;
-window.customFetch = async function(url){
-    var res = await fetch(url).then(res => res.json());
-    return res;
+window.getJwt = function getJwt() {
+    return window.jwt;
 }
+
+
+window.apiGet = function (url) {
+    return fetch(url).then(res => res.json());
+}
+
+async function customFetch(url, method, headers = {}, data = null) {
+    console.log(url);
+    console.log(method);
+    console.log(data);
+    // const response = await fetch(url, {
+    //     method: 'POST',
+    //     mode: 'cors',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         ...headers
+    //     },
+    //     body: JSON.stringify(data)
+    // });
+    // return response.json();
+    return "success";
+}
+
+window.customFetch = customFetch;
