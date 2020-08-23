@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Blazor.ContextMenu" Version="1.6.0" />
     <PackageReference Include="BlazorInputFile" Version="0.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.1" />
@@ -22,10 +23,6 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="wwwroot\js\script.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="wwwroot\js\inputfile.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
@@ -59,10 +56,34 @@
     <Content Update="Pages\Highlights\Components\AddHighlight.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Pages\Events\Components\ViewEvent.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Events\Components\Components\ViewEventInfo.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Events\Components\Components\ViewMoreDetails.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Events\Components\Components\ViewSchedule.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Events\EditEvents.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\Custom" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+    <_ContentIncludedByDefault Remove="build\publish\web.config" />
+    <_ContentIncludedByDefault Remove="build\Properties\launchSettings.json" />
+    <_ContentIncludedByDefault Remove="build\publish\wwwroot\sample-data\weather.json" />
+    <_ContentIncludedByDefault Remove="build\publish\wwwroot\_framework\blazor.boot.json" />
+    <_ContentIncludedByDefault Remove="build\wwwroot\_framework\blazor.boot.json" />
   </ItemGroup>
 
 </Project>

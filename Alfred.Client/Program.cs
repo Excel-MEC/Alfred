@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using System.Text;
 using Alfred.Client.Data;
 using Alfred.Client.Data.Interfaces;
+using Alfred.Client.Helpers;
 using Alfred.Client.Services;
 using Alfred.Client.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,17 +29,22 @@ namespace Alfred.Client
             {
                 options.UseWasmSharedBuffer = true;
             });
-
-            builder.Services.AddSingleton<IAuthService, AuthService>();
-            builder.Services.AddSingleton<IApiService, ApiService>();
-            builder.Services.AddSingleton<IConstantRepository, ConstantRepository>();
-
-            builder.Services.AddTransient(sp => new HttpClient());
-            builder.Services.AddSingleton<NotificationService>();
-            builder.Services.AddScoped<DialogService>();
-
-
+            ConfigureServices(builder.Services);
             await builder.Build().RunAsync();
+        }
+
+        private static void ConfigureServices(IServiceCollection services)
+        { 
+            services.AddSingleton<IAuthService, AuthService>();
+            services.AddSingleton<IApiService, ApiService>();
+            services.AddSingleton<IConstantRepository, ConstantRepository>();
+            services.AddTransient(sp => new HttpClient());
+            services.AddSingleton<NotificationService>();
+            services.AddScoped<DialogService>();
+            services.AddAutoMapper(opt =>
+            {
+                opt.AddProfile(new AutoMapperProfiles());
+            });
         }
     }
 }

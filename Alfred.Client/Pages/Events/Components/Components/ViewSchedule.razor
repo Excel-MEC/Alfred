@@ -1,5 +1,5 @@
 ﻿@using Alfred.Client.Dtos.Events
-@inject IConstantRepository ConstantRepo
+@using System.Globalization
 <RadzenFieldset Text="Schedule">
 
     <div class="row">
@@ -7,7 +7,7 @@
             <RadzenLabel Text="Venue"/>
         </div>
         <div class="col-md-9">
-            <RadzenTextBox style="width: 100%;" @bind-value="Event.Venue"/>
+            @Event.Venue
         </div>
     </div>
     <div class="row">
@@ -15,7 +15,7 @@
             <RadzenLabel Text="Day"/>
         </div>
         <div class="col-md-9">
-            <RadzenNumeric style="width:100%" @bind-Value="@Event.Day" Placeholder="Enter or clear"/>
+            @Event.Day
         </div>
     </div>
 
@@ -24,7 +24,7 @@
             <RadzenLabel Text="Date Time"/>
         </div>
         <div class="col-md-9">
-            <RadzenDatePicker ShowTime="true" style="width:100%" Name="EventDateTime" @bind-Value="Event.Datetime" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt"/>
+            @Event.Datetime.ToString(CultureInfo.InvariantCulture);
         </div>
     </div>
 
@@ -33,7 +33,7 @@
             <RadzenLabel Text="Number of Rounds"/>
         </div>
         <div class="col-md-9">
-            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@Event.NumberOfRounds" Placeholder="Enter or clear"/>
+            @Event.NumberOfRounds
         </div>
     </div>
 
@@ -42,7 +42,7 @@
             <RadzenLabel Text="Current Round"/>
         </div>
         <div class="col-md-9">
-            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@Event.CurrentRound" Placeholder="Enter or clear"/>
+            @Event.CurrentRound
         </div>
     </div>
 
@@ -51,15 +51,13 @@
             <RadzenLabel Text="Event Status"/>
         </div>
         <div class="col-md-9">
-            <RadzenDropDown @bind-Value="Event.EventStatusId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventStatus.Select(eventStatus => new {Id = ConstantRepo.EventStatus.IndexOf(eventStatus), Value = eventStatus})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
-            </RadzenDropDown>
+            @Event.EventStatus
         </div>
     </div>
-
 </RadzenFieldset>
 
 @code{
     [Parameter]
-    public DataForAddingEventDto Event { get; set; }
+    public EventForDetailedViewDto Event { get; set; }
 
 }

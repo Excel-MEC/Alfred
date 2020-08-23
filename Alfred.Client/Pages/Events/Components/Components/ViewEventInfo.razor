@@ -1,14 +1,19 @@
 ﻿@using Alfred.Client.Dtos.Events
-@using Alfred.Client.Models.Components
-@inject IConstantRepository ConstantRepo
 <RadzenFieldset Text="Event Info">
-
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Id"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Id
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
             <RadzenLabel Text="Name"/>
         </div>
         <div class="col-md-9">
-            <RadzenTextBox style="width: 100%;" @bind-value="Event.Name"/>
+            @Event.Name
         </div>
     </div>
 
@@ -16,13 +21,8 @@
         <div class="col-md-3 align-items-center d-flex">
             <RadzenLabel Text="Icon"/>
         </div>
-
         <div class="col-md-9 align-items-center file">
-            <CustomFileInput File="@Icon"/>
-            @if (Icon.Name == null)
-            {
-                @Event.Icon
-            }
+            <RadzenImage Path="@Event.Icon" Style="width:100px" />
         </div>
 
     </div>
@@ -31,8 +31,7 @@
             <RadzenLabel Text="Category"/>
         </div>
         <div class="col-md-9">
-            <RadzenDropDown @bind-Value="Event.CategoryId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.Category.Select(category => new {Id = ConstantRepo.Category.IndexOf(category), Value = category})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
-            </RadzenDropDown>
+            @Event.Category
         </div>
     </div>
     <div class="row">
@@ -40,8 +39,7 @@
             <RadzenLabel Text="Event Type"/>
         </div>
         <div class="col-md-9">
-            <RadzenDropDown @bind-Value="Event.EventTypeId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventType.Select(eventType => new {Id = ConstantRepo.EventType.IndexOf(eventType), Value = eventType})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
-            </RadzenDropDown>
+            @Event.EventType
         </div>
     </div>
 
@@ -49,8 +47,8 @@
         <div class="col-md-3 align-items-center d-flex">
             <RadzenLabel Text="About"/>
         </div>
-        <div class="col-md-9">
-            <RadzenTextArea @bind-Value="@Event.About" Rows="4" style="width: 100%"/>
+        <div class="col-md-9 large-text">
+            @Event.About
         </div>
     </div>
 
@@ -58,8 +56,8 @@
         <div class="col-md-3 align-items-center d-flex">
             <RadzenLabel Text="Format"/>
         </div>
-        <div class="col-md-9">
-            <RadzenTextArea @bind-Value="@Event.Format" Rows="4" style="width: 100%"/>
+        <div class="col-md-9 large-text">
+            @Event.Format
         </div>
     </div>
 
@@ -67,18 +65,25 @@
         <div class="col-md-3 align-items-center d-flex">
             <RadzenLabel Text="Rules"/>
         </div>
-        <div class="col-md-9">
-            <RadzenTextArea @bind-Value="@Event.Rules" Rows="4" style="width: 100%"/>
+        <div class="col-md-9 large-text">
+            @Event.Rules
         </div>
     </div>
 
 </RadzenFieldset>
 
+<style>
+    .large-text{
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+    .row{
+        margin-top: 10px;
+    }
+</style>
+
 @code{
 
     [Parameter]
-    public DataForAddingEventDto Event { get; set; }
-
-    [Parameter]
-    public CustomFile Icon { get; set; }
+    public EventForDetailedViewDto Event { get; set; }
 }

@@ -5,7 +5,7 @@
             <RadzenLabel Text="Entry Fee"/>
         </div>
         <div class="col-md-9">
-            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@NewEvent.EntryFee" Placeholder="Enter or clear"/>
+            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@Event.EntryFee" Placeholder="Enter or clear"/>
         </div>
     </div>
 
@@ -14,17 +14,17 @@
             <RadzenLabel Text="Prize Money"/>
         </div>
         <div class="col-md-9">
-            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@NewEvent.PrizeMoney" Placeholder="Enter or clear"/>
+            <RadzenNumeric TValue="int?" style="width:100%" @bind-Value="@Event.PrizeMoney" Placeholder="Enter or clear"/>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 align-items-center d-flex">
-            <RadzenCheckBox class="bool" @bind-Value="@NewEvent.NeedRegistration" TValue="bool"/>
+            <RadzenCheckBox class="bool" @bind-Value="@Event.NeedRegistration" TValue="bool"/>
             <RadzenLabel Text="Need Registration"/>
         </div>
         <div class="col-md-6 align-items-center d-flex">
-            <RadzenCheckBox class="bool" @bind-Value="@NewEvent.IsTeam" TValue="bool"/>
+            <RadzenCheckBox class="bool" @bind-Value="@Event.IsTeam" TValue="bool"/>
             <RadzenLabel Text="Is Team"/>
         </div>
     </div>
@@ -37,6 +37,7 @@
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     AllowFiltering="true" AllowClear="true"
                                     Data="@EventHeads"
+                                    Value="@Event?.EventHead1Id"
                                     TextProperty="Name" ValueProperty="Id"
                                     Style="width:100%"
                                     PlaceHolder="Select"
@@ -57,6 +58,7 @@
             <RadzenDropDownDataGrid TValue="int"
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     AllowFiltering="true" AllowClear="true"
+                                    Value="@Event?.EventHead2Id"
                                     Data="@EventHeads"
                                     TextProperty="Name" ValueProperty="Id"
                                     Style="width:100%"
@@ -75,15 +77,15 @@
 @code{
 
     [Parameter]
-    public DataForAddingEventDto NewEvent { get; set; }
+    public DataForAddingEventDto Event { get; set; }
 
     [Parameter]
     public List<EventHead> EventHeads { get; set; }
 
     void SetEventHead(int n, int id)
     {
-        if (n == 1) NewEvent.EventHead1Id = id;
-        else NewEvent.EventHead2Id = id;
+        if (n == 1) Event.EventHead1Id = id;
+        else Event.EventHead2Id = id;
     }
 
 }

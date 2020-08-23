@@ -1,15 +1,19 @@
 ﻿@page "/Events"
 @using Alfred.Client.Dtos.Events
+@using Alfred.Client.Pages.Events.Components
 @using Alfred.Client.Services.Interfaces
+@using System.Text.Json
+@using System.Text
 @inject IConstantRepository ConstantRepo
 @inject IJSRuntime JsRuntime
 @inject IApiService ApiService
+@inject DialogService Dialog
 
 <AuthorizedView Roles="Admin">
     <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8"
                 AllowSorting="true" Data="@_events.Where(e => _currentEventType == "All" || _currentEventType == e.EventType).Where(e => _currentCategory == "All" || _currentCategory == e.Category)" TItem="EventForListViewDto">
         <Columns>
-            <RadzenGridColumn TItem="EventForListViewDto" Property="Id" Title="Id"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Id" Title="Id" width="60px"/>
             <RadzenGridColumn TItem="EventForListViewDto" Property="Name" Title="Name"/>
             <RadzenGridColumn TItem="EventForListViewDto" Property="Icon" Title="Icon" Filterable="false" Sortable="false">
                 <Template Context="data">
@@ -29,12 +33,31 @@
             <RadzenGridColumn TItem="EventForListViewDto" Property="NeedRegistration" Title="Need Registration"/>
             <RadzenGridColumn TItem="EventForListViewDto" Property="Day" Title="Day"/>
             <RadzenGridColumn TItem="EventForListViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="View" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <Template Context="data">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" Click="@(args => Dialog.Open<ViewEvent>("Event Details", new Dictionary<string, object>() {{"Id", data.Id}}, new DialogOptions() {Width = "1200px"}))">
+                    </RadzenButton>
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="Edit" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <Template Context="data">
+                    <a href=@($"/Events/Edit/{data.Id}")>
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="edit" Size="ButtonSize.Small" />
+                    </a>
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventForListViewDto" Title="Delete" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <Template Context="data">
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(async highlight => await ShowConfirmDialogue(data))">
+                    </RadzenButton>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-@if (_loading)
-{
-    <div class="spinner"></div>
-}
+    @if (_loading)
+    {
+        <div class="spinner"></div>
+    }
 </AuthorizedView>
 
 @code {
@@ -44,12 +67,13 @@
     List<string> _eventType;
     List<string> _category;
     bool _loading;
+    string url = "/events/api/events";
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
         var client = await ApiService.Client();
-        _events = await client.GetFromJsonAsync<List<EventForListViewDto>>("/events/api/events");
+        _events = await client.GetFromJsonAsync<List<EventForListViewDto>>(url);
         _eventType = ConstantRepo.EventType.Select(x => x).ToList();
         _category = ConstantRepo.Category.Select(x => x).ToList();
 
@@ -60,5 +84,33 @@
         client.Dispose();
         _loading = false;
     }
+
+    async Task DeleteRow(EventForListViewDto eventForDelete, DialogService ds)
+    {
+        ds.Close(true);
+        _loading = true;
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri(url),
+            Content = new StringContent(JsonSerializer.Serialize(new {Id = eventForDelete.Id, Name = eventForDelete.Name}), Encoding.UTF8, "application/json")
+        };
+        var client = await ApiService.Client();
+        await client.SendAsync(request);
+        _events.Remove(eventForDelete);
+        client.Dispose();
+        _loading = false;
+    }
+
+    async Task ShowConfirmDialogue(EventForListViewDto eventForDelete) => await Dialog.OpenAsync("Alert", ds =>
+        @<RadzenCard Style="padding: 20px;">
+            <p Style="margin-bottom: 10px;">Are you sure you want to delete?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" Click="async () => await DeleteRow(eventForDelete, ds)" Style="margin-bottom: 10px; width: 150px"/>
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+                </div>
+            </div>
+        </RadzenCard>);
 
 }
