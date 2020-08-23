@@ -1,0 +1,59 @@
+﻿@using Alfred.Client.Dtos.Events
+<RadzenFieldset Text="More Details">
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Entry Fee"/>
+        </div>
+        <div class="col-md-9">
+            @Event.EntryFee
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Prize Money"/>
+        </div>
+        <div class="col-md-9">
+            @Event.PrizeMoney
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 align-items-center d-flex">
+            <RadzenCheckBox class="bool" @bind-Value="@Event.NeedRegistration" Disabled="true"/>
+            <RadzenLabel Text="Need Registration"/>
+        </div>
+        <div class="col-md-6 align-items-center d-flex">
+            <RadzenCheckBox class="bool" @bind-Value="@Event.IsTeam" Disabled="true"/>
+            <RadzenLabel Text="Is Team"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Head 1"/>
+        </div>
+        <div class="col-md-9">
+            Name: @Event.EventHead1?.Name <br/>
+            Email: @Event.EventHead1?.Email <br/>
+            Phone: @Event.EventHead1?.PhoneNumber
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Head 2"/>
+        </div>
+        <div class="col-md-9">
+            Name: @Event.EventHead2?.Name <br/>
+            Email: @Event.EventHead2?.Email <br/>
+            Phone: @Event.EventHead2?.PhoneNumber
+        </div>
+    </div>
+</RadzenFieldset>
+
+@code{
+
+    [Parameter]
+    public EventForDetailedViewDto Event { get; set; }
+
+
+}

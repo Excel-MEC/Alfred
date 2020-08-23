@@ -1,0 +1,84 @@
+﻿@using Alfred.Client.Dtos.Events
+@using Alfred.Client.Models.Components
+@inject IConstantRepository ConstantRepo
+<RadzenFieldset Text="Event Info">
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Name"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextBox style="width: 100%;" @bind-value="Event.Name"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Icon"/>
+        </div>
+
+        <div class="col-md-9 align-items-center file">
+            <CustomFileInput File="@Icon"/>
+            @if (Icon.Name == null)
+            {
+                @Event.Icon
+            }
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Category"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDropDown @bind-Value="Event.CategoryId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.Category.Select(category => new {Id = ConstantRepo.Category.IndexOf(category), Value = category})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
+            </RadzenDropDown>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Type"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDropDown @bind-Value="Event.EventTypeId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventType.Select(eventType => new {Id = ConstantRepo.EventType.IndexOf(eventType), Value = eventType})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
+            </RadzenDropDown>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="About"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextArea @bind-Value="@Event.About" Rows="4" style="width: 100%"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Format"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextArea @bind-Value="@Event.Format" Rows="4" style="width: 100%"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Rules"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextArea @bind-Value="@Event.Rules" Rows="4" style="width: 100%"/>
+        </div>
+    </div>
+
+</RadzenFieldset>
+
+@code{
+
+    [Parameter]
+    public DataForAddingEventDto Event { get; set; }
+
+    [Parameter]
+    public CustomFile Icon { get; set; }
+}

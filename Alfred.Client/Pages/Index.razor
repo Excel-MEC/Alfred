@@ -1,0 +1,23 @@
+﻿@page "/"
+@using Alfred.Client.Services.Interfaces
+@using Alfred.Client.Services
+@using Alfred.Client.Models
+@inject IAuthService AuthService
+
+<AuthorizedView Roles="Admin">
+  
+<h1>Hello, @User.Id</h1>
+  <RadzenButton Text="@text"></RadzenButton>
+  Welcome to Alfred
+</AuthorizedView>
+@code {
+  string text = "Hi";
+  User User = new User();
+  protected override async Task OnInitializedAsync()
+  {
+    await AuthService.Authorize();
+    User = AuthService.User;
+  }
+
+}
+

@@ -1,0 +1,89 @@
+﻿@using Alfred.Client.Dtos.Events
+<RadzenFieldset Text="Event Info">
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Id"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Id
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Name"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Name
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Icon"/>
+        </div>
+        <div class="col-md-9 align-items-center file">
+            <RadzenImage Path="@Event.Icon" Style="width:100px" />
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Category"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Category
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Type"/>
+        </div>
+        <div class="col-md-9">
+            @Event.EventType
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="About"/>
+        </div>
+        <div class="col-md-9 large-text">
+            @Event.About
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Format"/>
+        </div>
+        <div class="col-md-9 large-text">
+            @Event.Format
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Rules"/>
+        </div>
+        <div class="col-md-9 large-text">
+            @Event.Rules
+        </div>
+    </div>
+
+</RadzenFieldset>
+
+<style>
+    .large-text{
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+    .row{
+        margin-top: 10px;
+    }
+</style>
+
+@code{
+
+    [Parameter]
+    public EventForDetailedViewDto Event { get; set; }
+}

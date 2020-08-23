@@ -1,0 +1,120 @@
+﻿@using Alfred.Client.Models.Components
+@using Radzen.Blazor
+@inherits Microsoft.AspNetCore.Components.LayoutComponentBase
+<RadzenHeader class="bg-dark text-light border-0">
+    <ChildContent>
+        <div class="row justify-content-start align-items-center">
+            <div class="col-6 d-flex align-items-center">
+                <RadzenSidebarToggle Click="@(args => { _sidebarExpanded = !_sidebarExpanded; _bodyExpanded = !_bodyExpanded; })" class="bg-dark text-light border-0">
+                </RadzenSidebarToggle>
+                <RadzenLabel Text="Alfred">
+                </RadzenLabel>
+            </div>
+            <div class="col-6 d-flex align-items-center justify-content-end">
+            </div>
+        </div>
+    </ChildContent>
+</RadzenHeader>
+<div style="width:100%; height: 100%" class="bg-light text-dark">
+    <RadzenBody @bind-Expanded="@_bodyExpanded">
+        <ChildContent>
+            <RadzenContentContainer Name="main">
+                <RadzenNotification />
+                <RadzenDialog />
+                @Body
+            </RadzenContentContainer>
+        </ChildContent>
+    </RadzenBody>
+</div>
+<RadzenSidebar @bind-Expanded="@_sidebarExpanded" style="margin-top: 50px">
+    <ChildContent>
+        <RadzenPanelMenu>
+            @foreach (var item in _menu)
+            {
+                <RadzenPanelMenuItem Text="@item.Text" Path="@item.Path" Icon="@item.Icon">
+                    @if (item.Children != null)
+                    {
+                        @foreach (var childItem in item.Children)
+                        {
+                            <RadzenPanelMenuItem Text="@childItem.Text" Path="@childItem.Path" Icon="@childItem.Icon"/>
+                        }
+                    }
+                </RadzenPanelMenuItem>
+            }
+        </RadzenPanelMenu>
+    </ChildContent>
+</RadzenSidebar>
+
+@code {
+    bool _sidebarExpanded = true;
+    bool _bodyExpanded = false;
+
+    List<MenuItem> _menu = new List<MenuItem>()
+    {
+        new MenuItem()
+        {
+            Text = "Dashboard",
+            Path = "/",
+            Icon = "home",
+            Children = null
+        },
+        new MenuItem()
+        {
+            Text = "Accounts",
+            Path = "/Accounts",
+            Icon = "account_balance_wallet",
+            Children = null
+        },
+        new MenuItem()
+        {
+            Text = "Certificates",
+            Path = "/Certificates",
+            Icon = "assignment_ind",
+            Children = null
+        },
+        new MenuItem()
+        {
+            Text = "Events",
+            Icon = "extension",
+            Children = new List<MenuItem>()
+            {
+                new MenuItem()
+                {
+                    Text = "List Events",
+                    Path = "/Events",
+                    Icon = "list",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "Add Event",
+                    Path = "/Events/Add",
+                    Icon = "add_shopping_cart",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "Event Heads",
+                    Path = "/Events/EventHeads",
+                    Icon = "contact_phone",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "Highlights",
+                    Path = "/Events/Highlights",
+                    Icon = "photo_album",
+                    Children = null
+                }
+            }
+        },
+        new MenuItem()
+        {
+            Text = "Prelims",
+            Path = "/Prelims",
+            Icon = "assignment",
+            Children = null
+        }
+    };
+
+}

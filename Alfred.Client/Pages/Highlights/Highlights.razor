@@ -1,0 +1,95 @@
+﻿@page "/Events/Highlights"
+@using Alfred.Client.Models
+@using System.Text
+@using System.Text.Json
+@using Alfred.Client.Pages.Highlights.Components
+@using Alfred.Client.Services.Interfaces
+@inject DialogService Dialog
+@inject IApiService ApiService
+
+
+<AuthorizedView Roles="Admin">
+    <div class="row">
+        <div class="col-md-12 text-right mb-2">
+            <RadzenButton Text="Add Highlight" Click="@(args => Dialog.Open<AddHighlight>("Add Highlight", null, new DialogOptions() {Width = "700px"}))"/>
+            <RadzenButton Click="@(async () => await Reload())" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8"
+                        AllowSorting="true" Data="@_highlights" TItem="Highlight">
+                <Columns>
+                    <RadzenGridColumn TItem="Highlight" Property="Id" Title="Id"/>
+                    <RadzenGridColumn TItem="Highlight" Property="Name" Title="Name"/>
+                    <RadzenGridColumn TItem="Highlight" Property="Icon" Title="Icon" Filterable="false">
+                        <Template Context="data">
+                            <RadzenImage Path="@data?.Image" style="max-height: 80px"/>
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Highlight" Property="Delete" Title="Delete" Filterable="false">
+                        <Template Context="data">
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(async highlight => await ShowConfirmDialogue(data))">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </div>
+    </div>
+</AuthorizedView>
+
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+
+@code {
+    List<Highlight> _highlights = new List<Highlight>();
+    bool _loading = true;
+    string url = "/events/api/highlights";
+
+    async Task Reload()
+    {
+        var client = await ApiService.Client();
+        _highlights = await client.GetFromJsonAsync<List<Highlight>>(url);
+        _loading = false;
+        client.Dispose();
+    }
+
+    async Task DeleteRow(Highlight highlight, DialogService ds)
+    {
+        ds.Close(true);
+        _loading = true;
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri(url),
+            Content = new StringContent(JsonSerializer.Serialize(new {Id = highlight.Id, Name = highlight.Name}), Encoding.UTF8, "application/json")
+        };
+        var client = await ApiService.Client();
+        await client.SendAsync(request);
+        _highlights.Remove(highlight);
+        client.Dispose();
+        _loading = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Reload();
+    }
+
+    async Task ShowConfirmDialogue(Highlight highlight) => await Dialog.OpenAsync("Alert", ds =>
+        @<RadzenCard Style="padding: 20px;">
+            <p Style="margin-bottom: 10px;">Are you sure you want to delete?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" Click="async () => await DeleteRow(highlight, ds)" Style="margin-bottom: 10px; width: 150px"/>
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+                </div>
+            </div>
+        </RadzenCard>);
+
+}

@@ -1,0 +1,63 @@
+﻿@using Alfred.Client.Dtos.Events
+@using System.Globalization
+<RadzenFieldset Text="Schedule">
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Venue"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Venue
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Day"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Day
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Date Time"/>
+        </div>
+        <div class="col-md-9">
+            @Event.Datetime.ToString(CultureInfo.InvariantCulture);
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Number of Rounds"/>
+        </div>
+        <div class="col-md-9">
+            @Event.NumberOfRounds
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Current Round"/>
+        </div>
+        <div class="col-md-9">
+            @Event.CurrentRound
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Event Status"/>
+        </div>
+        <div class="col-md-9">
+            @Event.EventStatus
+        </div>
+    </div>
+</RadzenFieldset>
+
+@code{
+    [Parameter]
+    public EventForDetailedViewDto Event { get; set; }
+
+}
