@@ -1,6 +1,6 @@
 ﻿function receiveMessage(event) {
     if (typeof event.data == 'string' && event.data.length !== 0) {
-        window.jwt = event.data;
+        localStorage.setItem("token", event.data);
     } else if (event.data === null) {
         window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
     }
@@ -8,15 +8,11 @@
 
 window.addEventListener("message", receiveMessage);
 
-function getJwt() {
-    return window.jwt;
-}
-
 window.reload = function () {
     window.location.href = window.location;
 }
 window.getJwt = function getJwt() {
-    return window.jwt;
+    return localStorage.getItem("token");
 }
 
 

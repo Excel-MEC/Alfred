@@ -51,7 +51,7 @@
             <RadzenLabel Text="Event Status"/>
         </div>
         <div class="col-md-9">
-            <RadzenDropDown @bind-Value="NewEvent.EventStatusId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventStatus.Select(eventStatus => new {Id = ConstantRepo.EventType.IndexOf(eventStatus), Value = eventStatus})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
+            <RadzenDropDown @bind-Value="NewEvent.EventStatusId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventStatus.Select(eventStatus => new {Id = ConstantRepo.EventStatus.IndexOf(eventStatus), Value = eventStatus})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
             </RadzenDropDown>
         </div>
     </div>
@@ -61,4 +61,5 @@
 @code{
     [Parameter]
     public DataForAddingEventDto NewEvent { get; set; }
+
 }

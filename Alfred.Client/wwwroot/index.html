@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Alfred.Client</title>
     <base href="/" />
+    <script src="js/script.js"></script>
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/software-base.css">
     <link href="_content/Blazor.ContextMenu/blazorContextMenu.min.css" rel="stylesheet" />
@@ -13,7 +14,9 @@
 </head>
 
 <body>
-    <app>Loading...</app>
+    <app>
+        <div class="spinner"></div>
+    </app>
     <iframe
             title="authorize"
             style="display: none"
@@ -21,12 +24,11 @@
     src="https://staging.accounts.excelmec.org/auth/authorize"
     >
     </iframe>
-    
-    <script src="js/script.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
+
     <script src="js/inputfile.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
     <script src="_content/Blazor.ContextMenu/blazorContextMenu.min.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
 </html>

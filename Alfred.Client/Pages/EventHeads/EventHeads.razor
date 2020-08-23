@@ -8,61 +8,64 @@
 @using System.Text
 @using Alfred.Client.Pages.EventHeads.Components
 
-<div class="row">
-    <div class="col-md-12 text-right mb-2">
-        <RadzenButton Text="Add Event Head" Click="@(args => Dialog.Open<AddEventHead>("Add Event Head", null, new DialogOptions() {Width = "700px"}))"/>
-        <RadzenButton Click="@(async () => await Refresh())" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+
+<AuthorizedView Roles="Admin">
+    <div class="row">
+        <div class="col-md-12 text-right mb-2">
+            <RadzenButton Text="Add Event Head" Click="@(args => Dialog.Open<AddEventHead>("Add Event Head", null, new DialogOptions() {Width = "700px"}))"/>
+            <RadzenButton Click="@(async () => await Refresh())" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+        </div>
     </div>
-</div>
 
 
-<RadzenGrid @ref="@_eventHeadGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8" AllowSorting="true" Data="_eventHeads" TItem="EventHead" EditMode="DataGridEditMode.Single" RowUpdate="@(async (EventHead evehtHead) => await OnUpdateRow(evehtHead))">
-    <Columns>
-        <RadzenGridColumn TItem="EventHead" Property="Id" Title="Id"/>
-        <RadzenGridColumn TItem="EventHead" Property="Name" Title="Name">
-            <EditTemplate Context="eventHead">
-                <RadzenTextBox style="width: 100%;" @bind-value="eventHead.Name"/>
-            </EditTemplate>
-        </RadzenGridColumn>
-        <RadzenGridColumn TItem="EventHead" Property="Email" Title="Email">
-            <EditTemplate Context="eventHead">
-                <RadzenTextBox style="width: 100%;" @bind-value="eventHead.Email"/>
-            </EditTemplate>
-        </RadzenGridColumn>
-        <RadzenGridColumn TItem="EventHead" Property="PhoneNumber" Title="Phone">
-            <EditTemplate Context="eventHead">
-                <RadzenTextBox style="width: 100%;" @bind-value="eventHead.PhoneNumber"/>
-            </EditTemplate>
-        </RadzenGridColumn>
-        <RadzenGridColumn TItem="EventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
-            <Template Context="eventHead">
-                <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(eventHead))">
-                </RadzenButton>
-            </Template>
-            <EditTemplate Context="eventHead">
-                <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(eventHead))">
-                </RadzenButton>
-                <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(eventHead))">
-                </RadzenButton>
-            </EditTemplate>
-        </RadzenGridColumn>
-        <RadzenGridColumn TItem="EventHead" Context="eventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
-            <Template Context="eventHead">
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
-                </RadzenButton>
-            </Template>
-            <EditTemplate Context="eventHead">
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
-                </RadzenButton>
-            </EditTemplate>
-        </RadzenGridColumn>
-    </Columns>
-</RadzenGrid>
+    <RadzenGrid @ref="@_eventHeadGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8" AllowSorting="true" Data="_eventHeads" TItem="EventHead" EditMode="DataGridEditMode.Single" RowUpdate="@(async (EventHead evehtHead) => await OnUpdateRow(evehtHead))">
+        <Columns>
+            <RadzenGridColumn TItem="EventHead" Property="Id" Title="Id"/>
+            <RadzenGridColumn TItem="EventHead" Property="Name" Title="Name">
+                <EditTemplate Context="eventHead">
+                    <RadzenTextBox style="width: 100%;" @bind-value="eventHead.Name"/>
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventHead" Property="Email" Title="Email">
+                <EditTemplate Context="eventHead">
+                    <RadzenTextBox style="width: 100%;" @bind-value="eventHead.Email"/>
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventHead" Property="PhoneNumber" Title="Phone">
+                <EditTemplate Context="eventHead">
+                    <RadzenTextBox style="width: 100%;" @bind-value="eventHead.PhoneNumber"/>
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                <Template Context="eventHead">
+                    <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(eventHead))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="eventHead">
+                    <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(eventHead))">
+                    </RadzenButton>
+                    <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(eventHead))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="EventHead" Context="eventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <Template Context="eventHead">
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="eventHead">
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
 
-@if (_loading)
-{
-    <div class="spinner"></div>
-}
+    @if (_loading)
+    {
+        <div class="spinner"></div>
+    }
+</AuthorizedView>
 
 @code{
     bool _loading;

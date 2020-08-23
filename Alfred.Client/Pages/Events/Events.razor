@@ -31,12 +31,11 @@
             <RadzenGridColumn TItem="EventForListViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false"/>
         </Columns>
     </RadzenGrid>
-</AuthorizedView>
 @if (_loading)
 {
     <div class="spinner"></div>
 }
-
+</AuthorizedView>
 
 @code {
     List<EventForListViewDto> _events = new List<EventForListViewDto>();

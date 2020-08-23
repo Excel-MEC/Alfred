@@ -1,6 +1,7 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Alfred.Client.Models;
@@ -24,13 +25,19 @@ namespace Alfred.Client.Services
             try
             {
                 var token = await _jsRuntime.InvokeAsync<string>("getJwt");
-                var jwtHandler = new JwtSecurityTokenHandler();
-                var tokens = jwtHandler.ReadToken(token) as JwtSecurityToken;
+                string[] jwtEncodedSegments = token.Split('.');
+                var payloadSegment = jwtEncodedSegments[1].Trim();
+                payloadSegment =
+                    payloadSegment.PadRight(payloadSegment.Length + (4 - payloadSegment.Length % 4) % 4, '=');
+
+                var decodePayload = System.Convert.FromBase64String(payloadSegment);
+                var decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload);
+                var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(decodedUtf8Payload);
                 User = new User()
                 {
-                    Id = Convert.ToInt32(tokens.Claims.First(x => x.Type == "user_id").Value),
-                    Email = tokens.Claims.First(x => x.Type == "email").Value,
-                    Roles = tokens.Claims.First(x => x.Type == "role").Value.Split(',')
+                    Id = Convert.ToInt32(result["user_id"].ToString()),
+                    Email = result["email"].ToString(),
+                    Roles = result["role"].ToString().Split(",")
                 };
             }
             catch (Exception e)
