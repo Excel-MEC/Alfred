@@ -2,6 +2,7 @@
     if (typeof event.data == 'string' && event.data.length !== 0) {
         localStorage.setItem("token", event.data);
     } else if (event.data === null) {
+        localStorage.setItem('token', null);
         window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
     }
 }

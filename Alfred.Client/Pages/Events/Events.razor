@@ -35,8 +35,9 @@
             <RadzenGridColumn TItem="EventForListViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false"/>
             <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="View" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="data">
-                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" Click="@(args => Dialog.Open<ViewEvent>("Event Details", new Dictionary<string, object>() {{"Id", data.Id}}, new DialogOptions() {Width = "1200px"}))">
-                    </RadzenButton>
+                    <a href=@($"/Events/{data.Id}")>
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" />
+                    </a>
                 </Template>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="Edit" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">

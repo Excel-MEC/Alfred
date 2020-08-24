@@ -1,6 +1,9 @@
 ﻿@using Alfred.Client.Models.Components
-@using Radzen.Blazor
+@using Alfred.Client.Services.Interfaces
 @inherits Microsoft.AspNetCore.Components.LayoutComponentBase
+@inject IAuthService AuthService
+@inject IJSRuntime JsRuntime
+@inject NavigationManager Navigation
 <RadzenHeader class="bg-dark text-light border-0">
     <ChildContent>
         <div class="row justify-content-start align-items-center">
@@ -11,6 +14,15 @@
                 </RadzenLabel>
             </div>
             <div class="col-6 d-flex align-items-center justify-content-end">
+                <RadzenProfileMenu class="bg-dark" style="border: 0; vertical-align: middle">
+                    <Template>
+                        <RadzenGravatar Email="@AuthService.User?.Email" />
+                    </Template>
+                    <ChildContent>
+                        <RadzenProfileMenuItem Text="Accounts" Path="@_accountsUrl" Icon="account_circle"/>
+                        <RadzenProfileMenuItem Text="Logout" Path="@_logOutUrl" Icon="login" />
+                    </ChildContent>
+                </RadzenProfileMenu>
             </div>
         </div>
     </ChildContent>
@@ -19,8 +31,8 @@
     <RadzenBody @bind-Expanded="@_bodyExpanded">
         <ChildContent>
             <RadzenContentContainer Name="main">
-                <RadzenNotification />
-                <RadzenDialog />
+                <RadzenNotification/>
+                <RadzenDialog/>
                 @Body
             </RadzenContentContainer>
         </ChildContent>
@@ -48,6 +60,13 @@
 @code {
     bool _sidebarExpanded = true;
     bool _bodyExpanded = false;
+    string _accountsUrl = "https://staging.accounts.excelmec.org";
+    string _logOutUrl;
+
+    protected override void OnInitialized()
+    {
+        _logOutUrl = _accountsUrl + "/auth/logout?redirect_to=" + Navigation.Uri;
+    }
 
     List<MenuItem> _menu = new List<MenuItem>()
     {
