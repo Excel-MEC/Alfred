@@ -1,17 +1,11 @@
 ﻿@page "/Events/Add"
 @using Alfred.Client.Dtos.Events
-@using Alfred.Client.Models.Components
 @using Alfred.Client.Pages.Events.Components
-@using Alfred.Client.Services.Interfaces
 @using Tewr.Blazor.FileReader
 @inject IFileReaderService FileReader
-@inject IConstantRepository ConstantRepo
-@inject IJSRuntime JsRuntime
-@inject IApiService ApiService
-@inject NotificationService Notification
 
 
-<AuthorizedView Roles="Admin">
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <RadzenTemplateForm Data="@_newEvent" Submit="@(async (DataForAddingEventDto args) => { await Submit(args); })">
         <div class="row">
             <div class="col-md-6">
@@ -65,11 +59,9 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        ConstantRepo.OnChange += StateHasChanged;
         _newEvent = new DataForAddingEventDto();
         _icon = new CustomFile();
-        var client = await ApiService.Client();
-        _eventHeads = await client.GetFromJsonAsync<List<EventHead>>("/events/api/eventhead");
+        _eventHeads = await State.GetEventHeads();
         _loading = false;
     }
 

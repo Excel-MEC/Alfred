@@ -17,3 +17,13 @@
 @using Alfred.Client.Data
 @using Alfred.Client.Data.Interfaces
 @using Alfred.Client.Shared.Components
+@using Alfred.Client.Models
+@using Alfred.Client.Models.Custom
+@using Alfred.Client.Services.Interfaces
+@using AutoMapper
+@inject IStateService State
+@inject IApiService ApiService
+@inject ICustomNotification Notification
+@inject DialogService Dialog
+@inject IMapper Mapper
+@using Alfred.Client.Models.Components

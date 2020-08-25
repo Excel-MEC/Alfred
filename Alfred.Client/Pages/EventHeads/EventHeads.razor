@@ -1,15 +1,11 @@
 ﻿@page "/Events/EventHeads"
-@inject IApiService ApiService
-@inject NotificationService Notification
-@inject DialogService Dialog
 @using Alfred.Client.Dtos.Events
-@using Alfred.Client.Services.Interfaces
 @using System.Text.Json
 @using System.Text
 @using Alfred.Client.Pages.EventHeads.Components
 
 
-<AuthorizedView Roles="Admin">
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <div class="row">
         <div class="col-md-12 text-right mb-2">
             <RadzenButton Text="Add Event Head" Click="@(args => Dialog.Open<AddEventHead>("Add Event Head", null, new DialogOptions() {Width = "700px"}))"/>
@@ -77,9 +73,7 @@
     async Task Refresh()
     {
         _loading = true;
-        var client = await ApiService.Client();
-        _eventHeads = await client.GetFromJsonAsync<List<EventHead>>(_url);
-        client.Dispose();
+        _eventHeads = await State.GetEventHeads();
         _loading = false;
     }
 

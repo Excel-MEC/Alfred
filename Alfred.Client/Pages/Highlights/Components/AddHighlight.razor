@@ -1,16 +1,12 @@
-﻿@using Alfred.Client.Models
-@using Alfred.Client.Models.Components
-@using Alfred.Client.Services.Interfaces
-@using Tewr.Blazor.FileReader
+﻿@using Tewr.Blazor.FileReader
+@using Alfred.Client.Dtos.Highlights
+@using Alfred.Client.Dtos.Events
 @implements IDisposable
-@inject IApiService ApiService
 @inject IFileReaderService FileReader
-@inject IJSRuntime JsRuntime
-@inject NotificationService Notification
-@inject DialogService Dialog
+@inject IHighlightRepository HighlightRepo
 
 
-<RadzenTemplateForm Data="@_highlight" Submit="@(async (Highlight args) => { await Submit(args); })">
+<RadzenTemplateForm Data="@_highlight" Submit="@(async (DataForAddingHighlightDto args) => { await Submit(args); })">
     <div class="row">
         <div class="col-md-12">
             <RadzenFieldset Text="Data">
@@ -27,7 +23,7 @@
                         <RadzenLabel Text="Image"/>
                     </div>
                     <div class="col-md-9">
-                        <ImageInput File="@_image" />
+                        <ImageInput File="@_highlight.Image" />
                     </div>
                 </div>
 
@@ -55,78 +51,34 @@
 </style>
 
 @code{
-    Highlight _highlight = new Highlight();
-    CustomFile _image;
+    DataForAddingHighlightDto _highlight = new DataForAddingHighlightDto();
     bool _loading = false;
 
     protected override void OnInitialized()
     {
-        _image = new CustomFile();
+        _highlight.Image = new CustomFile();
     }
 
 
-    async Task Submit(Highlight newHighlight)
+    async Task Submit(DataForAddingHighlightDto newHighlight)
     {
         _loading = true;
-        NotificationMessage message;
-        try
-        {
-            var client = await ApiService.Client();
-            var content = new MultipartFormDataContent();
-            content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-            content.Add(new StreamContent(_image.Data, (int) _image.Data.Length), "Image", _image.Name);
-            content.Add(new StringContent(newHighlight.Name), "Name");
-            var response = await client.PostAsync("/events/api/highlights", content);
-            if (response.IsSuccessStatusCode)
-            {
-                message = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Success",
-                    Detail = "Successfully Added new Highlight",
-                    Duration = 4000
-                };
-            }
-            else
-            {
-                message = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Failed",
-                    Detail = "Something Went Wrong",
-                    Duration = 4000
-                };
-            }
-            client.Dispose();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-                message = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Failed",
-                    Detail = "Something Went Wrong",
-                    Duration = 4000
-                };
-
-        }
-        Notification.Notify(message);
+        await HighlightRepo.AddHighlight(newHighlight);
         Cancel();
         _loading = false;
     }
 
     void Cancel()
     {
-        _image.Data?.Dispose();
-        _image = new CustomFile();
-        _highlight = new Highlight();
+        _highlight.Image?.Data?.Dispose();
+        _highlight = new DataForAddingHighlightDto();
+        _highlight.Image = new CustomFile();
         Dialog.Close();
     }
 
     public void Dispose()
     {
-        _image.Data?.Dispose();
+        _highlight.Image?.Data?.Dispose();
     }
 
 }

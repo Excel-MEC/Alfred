@@ -1,15 +1,9 @@
 ﻿@page "/Events"
 @using Alfred.Client.Dtos.Events
-@using Alfred.Client.Pages.Events.Components
-@using Alfred.Client.Services.Interfaces
 @using System.Text.Json
 @using System.Text
-@inject IConstantRepository ConstantRepo
-@inject IJSRuntime JsRuntime
-@inject IApiService ApiService
-@inject DialogService Dialog
 
-<AuthorizedView Roles="Admin">
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
     <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8"
                 AllowSorting="true" Data="@_events.Where(e => _currentEventType == "All" || _currentEventType == e.EventType).Where(e => _currentCategory == "All" || _currentCategory == e.Category)" TItem="EventForListViewDto">
         <Columns>
@@ -65,24 +59,24 @@
     List<EventForListViewDto> _events = new List<EventForListViewDto>();
     string _currentEventType;
     string _currentCategory;
-    List<string> _eventType;
-    List<string> _category;
+    Constants _constants = new Constants();
+    List<string> _eventType = new List<string>();
+    List<string> _category = new List<string>();
     bool _loading;
     string url = "/events/api/events";
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        var client = await ApiService.Client();
-        _events = await client.GetFromJsonAsync<List<EventForListViewDto>>(url);
-        _eventType = ConstantRepo.EventType.Select(x => x).ToList();
-        _category = ConstantRepo.Category.Select(x => x).ToList();
+        _events = await State.GetEventList();
+        _constants = await State.GetConstants();
+        _eventType = _constants.EventType.Select(x => x).ToList();
+        _category = _constants.Category.Select(x => x).ToList();
 
         _eventType.Add("All");
         _category.Add("All");
         _currentEventType = "All";
         _currentCategory = "All";
-        client.Dispose();
         _loading = false;
     }
 

@@ -3,9 +3,9 @@
 @inject IAuthService AuthService
 @inject IJSRuntime JsRuntime
 
-@if (User != null)
+@if (_user != null)
 {
-    if (authenticated)
+    if (_authenticated)
     {
         @ChildContent
     }
@@ -27,10 +27,10 @@ else
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public string Roles { get; set; }
+    public string Role { get; set; }
 
-    User User;
-    bool authenticated = false;
+    User _user;
+    bool _authenticated = false;
 
     public async Task ReAuthorize()
     {
@@ -40,16 +40,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         await AuthService.Authorize();
-        User = AuthService.User;
-        if (User != null)
+        _user = AuthService.User;
+        if (_user != null)
         {
-            Roles ??= "User";
-            var userRoles = User.Roles;
-            foreach (var role in Roles.Split(",").Select(x => x.Trim()))
+            Role ??= Roles.User;
+            var userRoles = _user.Roles;
+            foreach (var role in Role.Split(",").Select(x => x.Trim()))
             {
                 if (userRoles.Contains(role))
                 {
-                    authenticated = true;
+                    _authenticated = true;
                 }
             }
         }

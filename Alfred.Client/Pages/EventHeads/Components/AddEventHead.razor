@@ -1,13 +1,6 @@
-﻿@using Alfred.Client.Models
-@using Alfred.Client.Models.Components
-@using Alfred.Client.Services.Interfaces
-@using Tewr.Blazor.FileReader
+﻿@using Tewr.Blazor.FileReader
 @using Alfred.Client.Dtos.Events
-@inject IApiService ApiService
 @inject IFileReaderService FileReader
-@inject NotificationService Notification
-@inject DialogService Dialog
-
 
 <RadzenTemplateForm Data="@_eventHead" Submit="@(async (EventHead args) => { await Submit(args); })">
     <div class="row">

@@ -1,18 +1,14 @@
 ﻿@page "/Events/Highlights"
-@using Alfred.Client.Models
 @using System.Text
 @using System.Text.Json
 @using Alfred.Client.Pages.Highlights.Components
-@using Alfred.Client.Services.Interfaces
-@inject DialogService Dialog
-@inject IApiService ApiService
 
 
-<AuthorizedView Roles="Admin">
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <div class="row">
         <div class="col-md-12 text-right mb-2">
             <RadzenButton Text="Add Highlight" Click="@(args => Dialog.Open<AddHighlight>("Add Highlight", null, new DialogOptions() {Width = "700px"}))"/>
-            <RadzenButton Click="@(async () => await Reload())" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+            <RadzenButton Click="@(async () => await Reload(true))" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
         </div>
     </div>
 
@@ -48,21 +44,20 @@
 
 @code {
     List<Highlight> _highlights = new List<Highlight>();
-    bool _loading = true;
+    bool _loading = false;
     string url = "/events/api/highlights";
 
-    async Task Reload()
+    async Task Reload(bool refresh=false)
     {
-        var client = await ApiService.Client();
-        _highlights = await client.GetFromJsonAsync<List<Highlight>>(url);
+        _loading = true;
+        _highlights = await State.GetHighlights(refresh);
         _loading = false;
-        client.Dispose();
     }
 
     async Task DeleteRow(Highlight highlight, DialogService ds)
     {
-        ds.Close(true);
         _loading = true;
+        ds.Close(true);
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Delete,
@@ -72,6 +67,7 @@
         var client = await ApiService.Client();
         await client.SendAsync(request);
         _highlights.Remove(highlight);
+        Notification.Success("Successfully Deleted");
         client.Dispose();
         _loading = false;
     }

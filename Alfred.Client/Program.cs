@@ -6,6 +6,7 @@ using System.Text;
 using Alfred.Client.Data;
 using Alfred.Client.Data.Interfaces;
 using Alfred.Client.Helpers;
+using Alfred.Client.Models.Components;
 using Alfred.Client.Services;
 using Alfred.Client.Services.Interfaces;
 using AutoMapper;
@@ -37,10 +38,12 @@ namespace Alfred.Client
         { 
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IApiService, ApiService>();
-            services.AddSingleton<IConstantRepository, ConstantRepository>();
-            services.AddTransient(sp => new HttpClient());
+            services.AddSingleton<IStateService, StateService>();
+            services.AddSingleton<IHighlightRepository, HighlightRepository>();
             services.AddSingleton<NotificationService>();
             services.AddScoped<DialogService>();
+            services.AddSingleton<ICustomNotification, CustomNotification>();
+            services.AddTransient(sp => new HttpClient());
             services.AddAutoMapper(opt =>
             {
                 opt.AddProfile(new AutoMapperProfiles());

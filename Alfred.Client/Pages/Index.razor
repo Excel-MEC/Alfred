@@ -1,11 +1,7 @@
 ﻿@page "/"
-@using Alfred.Client.Services.Interfaces
-@using Alfred.Client.Services
-@using Alfred.Client.Models
 @inject IAuthService AuthService
 
-<AuthorizedView Roles="Admin">
-  
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
 <h1>Hello, @User.Id</h1>
   <RadzenButton Text="@text"></RadzenButton>
   Welcome to Alfred

@@ -1,6 +1,5 @@
 ﻿@using Alfred.Client.Dtos.Events
 @using Alfred.Client.Models.Components
-@inject IConstantRepository ConstantRepo
 <RadzenFieldset Text="Event Info">
 
     <div class="row">
@@ -31,7 +30,7 @@
             <RadzenLabel Text="Category"/>
         </div>
         <div class="col-md-9">
-            <RadzenDropDown @bind-Value="Event.CategoryId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.Category.Select(category => new {Id = ConstantRepo.Category.IndexOf(category), Value = category})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
+            <RadzenDropDown @bind-Value="Event.CategoryId" AllowClear="true" Placeholder="Select something" Data="@_constants.Category.Select(category => new {Id = _constants.Category.IndexOf(category), Value = category})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
             </RadzenDropDown>
         </div>
     </div>
@@ -40,7 +39,7 @@
             <RadzenLabel Text="Event Type"/>
         </div>
         <div class="col-md-9">
-            <RadzenDropDown @bind-Value="Event.EventTypeId" AllowClear="true" Placeholder="Select something" Data="@ConstantRepo.EventType.Select(eventType => new {Id = ConstantRepo.EventType.IndexOf(eventType), Value = eventType})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
+            <RadzenDropDown @bind-Value="Event.EventTypeId" AllowClear="true" Placeholder="Select something" Data="@_constants.EventType.Select(eventType => new {Id = _constants.EventType.IndexOf(eventType), Value = eventType})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
             </RadzenDropDown>
         </div>
     </div>
@@ -81,4 +80,12 @@
 
     [Parameter]
     public CustomFile Icon { get; set; }
+    
+    Constants _constants = new Constants();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _constants = await State.GetConstants();
+    }
+
 }
