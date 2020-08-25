@@ -1,9 +1,16 @@
 ﻿@page "/Events"
 @using Alfred.Client.Dtos.Events
-@using System.Text.Json
-@using System.Text
+@inject IEventRepository EventRepo
 
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
+    <div class="row">
+        <div class="col-md-12 text-right mb-2">
+            <a href="/Events/Add">
+            <RadzenButton Text="Add Event"/>
+            </a>
+            <RadzenButton Click="@(async () => await Refresh(true))" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+        </div>
+    </div>
     <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8"
                 AllowSorting="true" Data="@_events.Where(e => _currentEventType == "All" || _currentEventType == e.EventType).Where(e => _currentCategory == "All" || _currentCategory == e.Category)" TItem="EventForListViewDto">
         <Columns>
@@ -30,14 +37,14 @@
             <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="View" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="data">
                     <a href=@($"/Events/{data.Id}")>
-                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small"/>
                     </a>
                 </Template>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="Edit" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="data">
                     <a href=@($"/Events/Edit/{data.Id}")>
-                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="edit" Size="ButtonSize.Small" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="edit" Size="ButtonSize.Small"/>
                     </a>
                 </Template>
             </RadzenGridColumn>
@@ -63,7 +70,6 @@
     List<string> _eventType = new List<string>();
     List<string> _category = new List<string>();
     bool _loading;
-    string url = "/events/api/events";
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,18 +88,16 @@
 
     async Task DeleteRow(EventForListViewDto eventForDelete, DialogService ds)
     {
-        ds.Close(true);
         _loading = true;
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Delete,
-            RequestUri = new Uri(url),
-            Content = new StringContent(JsonSerializer.Serialize(new {Id = eventForDelete.Id, Name = eventForDelete.Name}), Encoding.UTF8, "application/json")
-        };
-        var client = await ApiService.Client();
-        await client.SendAsync(request);
-        _events.Remove(eventForDelete);
-        client.Dispose();
+        await EventRepo.DeleteEvent(eventForDelete);
+        _loading = false;
+        ds.Close(true);
+    }
+
+    async Task Refresh(bool refresh=false)
+    {
+        _loading = true;
+        _events = await State.GetEventList(refresh);
         _loading = false;
     }
 

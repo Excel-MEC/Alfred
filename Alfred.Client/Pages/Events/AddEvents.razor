@@ -1,15 +1,21 @@
 ﻿@page "/Events/Add"
 @using Alfred.Client.Dtos.Events
 @using Alfred.Client.Pages.Events.Components
-@using Tewr.Blazor.FileReader
-@inject IFileReaderService FileReader
+@inject IEventRepository EventRepo
 
 
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <RadzenTemplateForm Data="@_newEvent" Submit="@(async (DataForAddingEventDto args) => { await Submit(args); })">
         <div class="row">
+            <div class="col-md-12 mb-2">
+                <a href=@($"/Events/")>
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="navigate_before" Text="Back"/>
+                </a>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-6">
-                <EventInfo Event="@_newEvent" Icon="@_icon"/>
+                <EventInfo Event="@_newEvent"/>
             </div>
             <div class="col-md-6">
                 <div class="row">
@@ -50,17 +56,13 @@
 </style>
 
 @code{
-    DataForAddingEventDto _newEvent;
+    DataForAddingEventDto _newEvent = new DataForAddingEventDto();
     bool _loading = false;
     List<EventHead> _eventHeads;
-
-    CustomFile _icon;
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        _newEvent = new DataForAddingEventDto();
-        _icon = new CustomFile();
         _eventHeads = await State.GetEventHeads();
         _loading = false;
     }
@@ -68,8 +70,7 @@
 
     void Cancel()
     {
-        _icon.Data?.Dispose();
-        _icon = new CustomFile();
+        _newEvent.Icon.Data?.Dispose();
         _newEvent = new DataForAddingEventDto();
     }
 
@@ -77,70 +78,7 @@
     async Task Submit(DataForAddingEventDto newEvent)
     {
         _loading = true;
-        try
-        {
-            var client = await ApiService.Client();
-            var content = new MultipartFormDataContent();
-            content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-            content.Add(new StringContent(newEvent.Name), "Name");
-            content.Add(new StreamContent(_icon.Data, (int) _icon.Data.Length), "Icon", _icon.Name);
-            content.Add(new StringContent(newEvent.CategoryId.ToString()), "CategoryId");
-            content.Add(new StringContent(newEvent.EventTypeId.ToString()), "EventTypeId");
-            content.Add(new StringContent(newEvent.About), "About");
-            content.Add(new StringContent(newEvent.Format), "Format");
-            content.Add(new StringContent(newEvent.Rules), "Rules");
-            content.Add(new StringContent(newEvent.Venue), "Venue");
-            content.Add(new StringContent(newEvent.Day.ToString()), "Day");
-            content.Add(new StringContent(newEvent.Datetime.ToLongDateString()), "Datetime");
-            content.Add(new StringContent(newEvent.NumberOfRounds.ToString()), "NumberOfRounds");
-            content.Add(new StringContent(newEvent.CurrentRound.ToString()), "CurrentRound");
-            content.Add(new StringContent(newEvent.EventStatusId.ToString()), "EventStatusId");
-            content.Add(new StringContent(newEvent.EntryFee.ToString()), "EntryFee");
-            content.Add(new StringContent(newEvent.PrizeMoney.ToString()), "PrizeMoney");
-            content.Add(new StringContent(newEvent.NeedRegistration.ToString()), "NeedRegistration");
-            content.Add(new StringContent(newEvent.IsTeam.ToString()), "IsTeam");
-            content.Add(new StringContent(newEvent.EventHead1Id.ToString()), "EventHead1Id");
-            content.Add(new StringContent(newEvent.EventHead2Id.ToString()), "EventHead2Id");
-            var response = await client.PostAsync("/events/api/events", content);
-            if (response.IsSuccessStatusCode)
-            {
-                var successMessage = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Success",
-                    Detail = "Successfully Added new Event",
-                    Duration = 4000
-                };
-                Notification.Notify(successMessage);
-                _icon.Data?.Dispose();
-                _icon = new CustomFile();
-                _newEvent = new DataForAddingEventDto();
-            }
-            else
-            {
-                var errorMessage = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Error",
-                    Detail = "Error During uploading",
-                    Duration = 4000
-                };
-                Notification.Notify(errorMessage);
-            }
-            client.Dispose();
-            Cancel();
-        }
-        catch (Exception e)
-        {
-            var errorMessage = new NotificationMessage()
-            {
-                Severity = NotificationSeverity.Error,
-                Summary = "Error",
-                Detail = e.Message,
-                Duration = 4000
-            };
-            Notification.Notify(errorMessage);
-        }
+        _newEvent = await EventRepo.AddEvent(newEvent);
         _loading = false;
     }
 

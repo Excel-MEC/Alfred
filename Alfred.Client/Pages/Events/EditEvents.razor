@@ -1,15 +1,21 @@
 ﻿@page "/Events/Edit/{Id:int}"
 @using Alfred.Client.Dtos.Events
 @using Alfred.Client.Pages.Events.Components
-@using Tewr.Blazor.FileReader
-@inject IFileReaderService FileReader
+@inject IEventRepository EventRepo
 
 
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <RadzenTemplateForm Data="@_event" Submit="@(async (DataForAddingEventDto args) => { await Submit(args); })">
         <div class="row">
+            <div class="col-md-12 mb-2">
+                <a href=@($"/Events/")>
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="navigate_before" Text="Back"/>
+                </a>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-6">
-                <EventInfo Event="@_event" Icon="@_icon"/>
+                <EventInfo Event="@_event"/>
             </div>
             <div class="col-md-6">
                 <div class="row">
@@ -57,16 +63,12 @@
     DataForAddingEventDto _event = new DataForAddingEventDto();
     bool _loading = false;
     List<EventHead> _eventHeads;
-    CustomFile _icon = new CustomFile();
     EventForDetailedViewDto _currentEvent = new EventForDetailedViewDto();
-    string url = "/events/api/events";
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        var client = await ApiService.Client();
-        _currentEvent = await client.GetFromJsonAsync<EventForDetailedViewDto>($"{url}/{Id}");
-        client.Dispose();
+        _currentEvent = await EventRepo.GetEvent(Id);
         _event = Mapper.Map<DataForAddingEventDto>(_currentEvent);
         _eventHeads = await State.GetEventHeads();
         _loading = false;
@@ -75,8 +77,7 @@
 
     void Cancel()
     {
-        _icon.Data?.Dispose();
-        _icon = new CustomFile();
+        _event.Icon.Data?.Dispose();
         _event = new DataForAddingEventDto();
     }
 
@@ -84,76 +85,7 @@
     async Task Submit(DataForAddingEventDto updatedEvent)
     {
         _loading = true;
-        try
-        {
-            var client = await ApiService.Client();
-            var content = new MultipartFormDataContent();
-            Console.WriteLine(Id.ToString());
-            content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-            content.Add(new StringContent(Id.ToString()), "Id");
-            content.Add(new StringContent(updatedEvent.Name), "Name");
-            if (_icon.Data != null)
-                content.Add(new StreamContent(_icon.Data, (int) _icon.Data.Length), "Icon", _icon.Name);
-            content.Add(new StringContent(updatedEvent.CategoryId.ToString()), "CategoryId");
-            content.Add(new StringContent(updatedEvent.EventTypeId.ToString()), "EventTypeId");
-            content.Add(new StringContent(updatedEvent.About), "About");
-            content.Add(new StringContent(updatedEvent.Format), "Format");
-            content.Add(new StringContent(updatedEvent.Rules), "Rules");
-            content.Add(new StringContent(updatedEvent.Venue), "Venue");
-            content.Add(new StringContent(updatedEvent.Day.ToString()), "Day");
-            content.Add(new StringContent(updatedEvent.Datetime.ToLongDateString()), "Datetime");
-            content.Add(new StringContent(updatedEvent.NumberOfRounds.ToString()), "NumberOfRounds");
-            content.Add(new StringContent(updatedEvent.CurrentRound.ToString()), "CurrentRound");
-            content.Add(new StringContent(updatedEvent.EventStatusId.ToString()), "EventStatusId");
-            content.Add(new StringContent(updatedEvent.EntryFee.ToString()), "EntryFee");
-            content.Add(new StringContent(updatedEvent.PrizeMoney.ToString()), "PrizeMoney");
-            content.Add(new StringContent(updatedEvent.NeedRegistration.ToString()), "NeedRegistration");
-            content.Add(new StringContent(updatedEvent.IsTeam.ToString()), "IsTeam");
-            content.Add(new StringContent(updatedEvent.EventHead1Id.ToString()), "EventHead1Id");
-            content.Add(new StringContent(updatedEvent.EventHead2Id.ToString()), "EventHead2Id");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri(url),
-                Content = content
-            };
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                var successMessage = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Success",
-                    Detail = "Successfully Added new Event",
-                    Duration = 4000
-                };
-                Notification.Notify(successMessage);
-            }
-            else
-            {
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-                var errorMessage = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Error",
-                    Detail = "Error During uploading",
-                    Duration = 4000
-                };
-                Notification.Notify(errorMessage);
-            }
-            client.Dispose();
-        }
-        catch (Exception e)
-        {
-            var errorMessage = new NotificationMessage()
-            {
-                Severity = NotificationSeverity.Error,
-                Summary = "Error",
-                Detail = e.Message,
-                Duration = 4000
-            };
-            Notification.Notify(errorMessage);
-        }
+        _event = await EventRepo.UpdateEvent(updatedEvent, Id);
         _loading = false;
     }
 

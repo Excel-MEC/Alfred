@@ -21,9 +21,10 @@
 @using Alfred.Client.Models.Custom
 @using Alfred.Client.Services.Interfaces
 @using AutoMapper
+@using Alfred.Client.Models.Components
+@inject DialogService Dialog
 @inject IStateService State
 @inject IApiService ApiService
 @inject ICustomNotification Notification
-@inject DialogService Dialog
 @inject IMapper Mapper
-@using Alfred.Client.Models.Components
+@inject NavigationManager NavigationManager

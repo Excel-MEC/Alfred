@@ -3,13 +3,14 @@
 @using System.Text.Json
 @using System.Text
 @using Alfred.Client.Pages.EventHeads.Components
+@inject IEventHeadRepository EventHeadRepo
 
 
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <div class="row">
         <div class="col-md-12 text-right mb-2">
             <RadzenButton Text="Add Event Head" Click="@(args => Dialog.Open<AddEventHead>("Add Event Head", null, new DialogOptions() {Width = "700px"}))"/>
-            <RadzenButton Click="@(async () => await Refresh())" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+            <RadzenButton Click="@(async () => await Refresh(true))" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
         </div>
     </div>
 
@@ -67,13 +68,12 @@
     bool _loading;
     List<EventHead> _eventHeads = new List<EventHead>();
     RadzenGrid<EventHead> _eventHeadGrid;
-    string _url = "/events/api/eventHead";
     EventHead _editing;
 
-    async Task Refresh()
+    async Task Refresh(bool refresh=false)
     {
         _loading = true;
-        _eventHeads = await State.GetEventHeads();
+        _eventHeads = await State.GetEventHeads(refresh);
         _loading = false;
     }
 
@@ -85,25 +85,7 @@
     async Task OnUpdateRow(EventHead eventHead)
     {
         _loading = true;
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Put,
-            RequestUri = new Uri(_url),
-            Content = new StringContent(JsonSerializer.Serialize(eventHead), Encoding.UTF8, "application/json")
-        };
-        var client = await ApiService.Client();
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var message = new NotificationMessage()
-            {
-                Severity = NotificationSeverity.Success,
-                Summary = "Success",
-                Detail = "Successfully Updated",
-                Duration = 4000
-            };
-            Notification.Notify(message);
-        }
+        await EventHeadRepo.UpdateEventHead(eventHead);
         _loading = false;
     }
 
@@ -128,25 +110,7 @@
     {
         ds.Close(true);
         _loading = true;
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Delete,
-            RequestUri = new Uri(_url),
-            Content = new StringContent(JsonSerializer.Serialize(eventHead), Encoding.UTF8, "application/json")
-        };
-        var client = await ApiService.Client();
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var message = new NotificationMessage()
-            {
-                Severity = NotificationSeverity.Success,
-                Summary = "Success",
-                Detail = "Successfully Deleted",
-                Duration = 4000
-            };
-            Notification.Notify(message);
-        }
+        await EventHeadRepo.DeleteEventHead(eventHead);
         _loading = false;
         await Refresh();
     }

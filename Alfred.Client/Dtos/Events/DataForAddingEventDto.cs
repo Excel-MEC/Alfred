@@ -1,4 +1,5 @@
 ﻿using System;
+using Alfred.Client.Models.Components;
 using BlazorInputFile;
 
 namespace Alfred.Client.Dtos.Events
@@ -7,7 +8,7 @@ namespace Alfred.Client.Dtos.Events
     {
         
         public string Name { get; set; }
-        public IFileListEntry Icon { get; set; }
+        public CustomFile Icon { get; set; }
         public int? CategoryId { get; set; }
         public int? EventTypeId { get; set; }
         public string About { get; set; }
@@ -26,5 +27,10 @@ namespace Alfred.Client.Dtos.Events
         public int? NumberOfRounds { get; set; }
         public int? CurrentRound { get; set; }
         public bool NeedRegistration { get; set; }
+
+        public DataForAddingEventDto()
+        {
+            Icon = new CustomFile();
+        }
     }
 }

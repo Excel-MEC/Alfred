@@ -26,28 +26,24 @@ namespace Alfred.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
-            builder.Services.AddFileReaderService(options =>
-            {
-                options.UseWasmSharedBuffer = true;
-            });
+            builder.Services.AddFileReaderService(options => { options.UseWasmSharedBuffer = true; });
             ConfigureServices(builder.Services);
             await builder.Build().RunAsync();
         }
 
         private static void ConfigureServices(IServiceCollection services)
-        { 
+        {
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IApiService, ApiService>();
             services.AddSingleton<IStateService, StateService>();
             services.AddSingleton<IHighlightRepository, HighlightRepository>();
+            services.AddSingleton<IEventRepository, EventRepository>();
+            services.AddSingleton<IEventHeadRepository, EventHeadRepository>();
             services.AddSingleton<NotificationService>();
             services.AddScoped<DialogService>();
             services.AddSingleton<ICustomNotification, CustomNotification>();
             services.AddTransient(sp => new HttpClient());
-            services.AddAutoMapper(opt =>
-            {
-                opt.AddProfile(new AutoMapperProfiles());
-            });
+            services.AddAutoMapper(opt => { opt.AddProfile(new AutoMapperProfiles()); });
         }
     }
 }

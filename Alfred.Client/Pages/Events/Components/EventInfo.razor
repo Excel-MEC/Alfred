@@ -7,7 +7,7 @@
             <RadzenLabel Text="Name"/>
         </div>
         <div class="col-md-9">
-            <RadzenTextBox style="width: 100%;" @bind-value="Event.Name"/>
+            <RadzenTextBox style="width: 100%;" @bind-value="Event.Name" Name="EventName"/>
         </div>
     </div>
 
@@ -17,8 +17,8 @@
         </div>
 
         <div class="col-md-9 align-items-center file">
-            <ImageInput File="@Icon"/>
-            @if (Icon.Name == null)
+            <ImageInput File="@Event.Icon"/>
+            @if (Event.Icon.Name == null)
             {
                 @Event.Icon
             }
@@ -78,9 +78,6 @@
     [Parameter]
     public DataForAddingEventDto Event { get; set; }
 
-    [Parameter]
-    public CustomFile Icon { get; set; }
-    
     Constants _constants = new Constants();
 
     protected override async Task OnInitializedAsync()

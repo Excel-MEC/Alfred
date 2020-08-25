@@ -1,6 +1,7 @@
 ﻿@using Tewr.Blazor.FileReader
 @using Alfred.Client.Dtos.Events
 @inject IFileReaderService FileReader
+@inject IEventHeadRepository EventHeadRepo
 
 <RadzenTemplateForm Data="@_eventHead" Submit="@(async (EventHead args) => { await Submit(args); })">
     <div class="row">
@@ -61,46 +62,7 @@
     async Task Submit(EventHead newEventHead)
     {
         _loading = true;
-        NotificationMessage message;
-        try
-        {
-            var client = await ApiService.Client();
-            var response = await client.PostAsJsonAsync("/events/api/eventHead", newEventHead);
-            if (response.IsSuccessStatusCode)
-            {
-                message = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Success",
-                    Detail = "Successfully Added new Highlight",
-                    Duration = 4000
-                };
-            }
-            else
-            {
-                message = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Failed",
-                    Detail = "Something Went Wrong",
-                    Duration = 4000
-                };
-            }
-            client.Dispose();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-                message = new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Failed",
-                    Detail = "Something Went Wrong",
-                    Duration = 4000
-                };
-
-        }
-        Notification.Notify(message);
+        await EventHeadRepo.AddEventHead(newEventHead);
         Cancel();
         _loading = false;
     }

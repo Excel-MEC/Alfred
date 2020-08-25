@@ -1,6 +1,7 @@
 ﻿@page "/Events/{Id:int}"
 @using Alfred.Client.Dtos.Events
 @using Alfred.Client.Pages.Events.Components
+@inject IEventRepository EventRepo
 
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
     <RadzenCard Style="margin-bottom: 20px;">
@@ -48,9 +49,7 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        var client = await ApiService.Client();
-        _event = await client.GetFromJsonAsync<EventForDetailedViewDto>($"/events/api/events/{Id}");
-        client.Dispose();
+        _event = await EventRepo.GetEvent(Id);
         _loading = false;
     }
 
