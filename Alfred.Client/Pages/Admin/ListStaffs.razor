@@ -22,7 +22,7 @@
             <RadzenGridColumn TItem="StaffForListViewDto" Property="Name" Title="Name"/>
             <RadzenGridColumn TItem="StaffForListViewDto" Property="Email" Title="E-mail"/>
             <RadzenGridColumn TItem="StaffForListViewDto" Property="MobileNumber" Title="Phone"/>
-            <RadzenGridColumn TItem="StaffForListViewDto" Property="Role" Title="Roles">
+            <RadzenGridColumn TItem="StaffForListViewDto" Property="Role" Title="Roles" Filterable="false" Sortable="false">
                 <Template Context="singleStaff">
                     <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" @bind-Value="singleStaff.Role" Multiple="true" Placeholder="Select..." Data="@_roles" TextProperty="Role" ValueProperty="Role" Disabled="true"/>
                 </Template>
