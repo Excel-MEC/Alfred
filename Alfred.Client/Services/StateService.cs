@@ -76,7 +76,7 @@ namespace Alfred.Client.Services
 
         public async Task<List<StaffForListViewDto>> StaffList(bool refresh = false)
         {
-            if (!refresh && Users != null) return Staffs;
+            if (!refresh && Staffs != null) return Staffs;
             var client = await _apiService.Client();
             var staffResponse =
                 await client.GetFromJsonAsync<List<UserForListViewDto>>(
