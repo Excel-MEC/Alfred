@@ -1,0 +1,119 @@
+﻿@page "/Admin/Staffs"
+@using Alfred.Client.Dtos.Admin
+@using Alfred.Client.Dtos.Events
+@using Alfred.Client.Dtos.Highlights
+@using System.Data.Common
+@using System.Data
+@using Alfred.Client.Pages.Admin.Components
+@inject IUserRepository UserRepo
+
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
+    <div class="row">
+        <div class="col-md-12 text-right mb-2">
+            <RadzenButton Text="Add Staff" Click="@(args => Dialog.Open<AddStaff>("Add Event Head", null, new DialogOptions() {Width = "700px"}))"/>
+            <RadzenButton Click="@(async () => await Refresh(true))" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+        </div>
+    </div>
+
+    <RadzenGrid @ref="@_staffGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="20"
+                AllowSorting="true" Data="@_staffs" TItem="StaffForListViewDto" EditMode="DataGridEditMode.Single" RowUpdate="@(async (StaffForListViewDto staff) => await Submit(staff))">
+        <Columns>
+            <RadzenGridColumn TItem="StaffForListViewDto" Property="Id" Title="Id" width="60px"/>
+            <RadzenGridColumn TItem="StaffForListViewDto" Property="Name" Title="Name"/>
+            <RadzenGridColumn TItem="StaffForListViewDto" Property="Email" Title="E-mail"/>
+            <RadzenGridColumn TItem="StaffForListViewDto" Property="MobileNumber" Title="Phone"/>
+            <RadzenGridColumn TItem="StaffForListViewDto" Property="Role" Title="Roles">
+                <Template Context="singleStaff">
+                    <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" @bind-Value="singleStaff.Role" Multiple="true" Placeholder="Select..." Data="@_roles" TextProperty="Role" ValueProperty="Role" Disabled="true"/>
+                </Template>
+                <EditTemplate Context="singleStaff">
+                    <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" @bind-Value="@_editing" Multiple="true" Placeholder="Select..." Data="@_roles" TextProperty="Role" ValueProperty="Role"/>
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StaffForListViewDto" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                <Template Context="singleStaff">
+                    <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(singleStaff))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="singleStaff">
+                    <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(singleStaff))">
+                    </RadzenButton>
+                    <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(singleStaff))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+    @if (_loading)
+    {
+        <div class="spinner"></div>
+    }
+</AuthorizedView>
+
+@code{
+
+    List<StaffForListViewDto> _staffs;
+    bool _loading = false;
+    readonly List<RoleTemplate> _roles = new List<RoleTemplate>();
+    RadzenGrid<StaffForListViewDto> _staffGrid;
+    IEnumerable<string> _editing;
+
+    private class RoleTemplate
+    {
+        public string Role { get; set; }
+    }
+
+    async Task Refresh(bool refresh = false)
+    {
+        _loading = true;
+        _staffs = await State.StaffList(refresh);
+        _loading = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roles.Add(new RoleTemplate() {Role = Roles.Admin});
+        _roles.Add(new RoleTemplate() {Role = Roles.Core});
+        _roles.Add(new RoleTemplate() {Role = Roles.Editor});
+        _roles.Add(new RoleTemplate() {Role = Roles.Staff});
+        _roles.Add(new RoleTemplate() {Role = Roles.User});
+        await Refresh();
+    }
+
+    async Task Submit(StaffForListViewDto staff)
+    {
+        _loading = true;
+        if (staff.Role.Any())
+        {
+            var dataForUpdatingRole = new DataForUpdatingRoleDto()
+            {
+                Id = staff.Id,
+                Role = string.Join(",", staff.Role)
+            };
+            await UserRepo.UpdateRole(dataForUpdatingRole);
+        }
+        else
+        {
+            Notification.Warning("Roles cannot be empty");
+        }
+        _loading = false;
+    }
+    
+    void SaveRow(StaffForListViewDto staff)
+    {
+        staff.Role = _editing;
+        _staffGrid.UpdateRow(staff);
+    }
+
+    void EditRow(StaffForListViewDto staff)
+    {
+        _editing = staff.Role.Select(x => x);
+        _staffGrid.EditRow(staff);
+    }
+
+    void CancelEdit(StaffForListViewDto staff)
+    {
+        _staffGrid.CancelEditRow(staff);
+    }
+
+}

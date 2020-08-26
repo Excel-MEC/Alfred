@@ -71,6 +71,15 @@
     <Content Update="Shared\Components\ImageInput.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Pages\Admin\ListUsers.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Admin\ListStaffs.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Admin\Components\AddStaff.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +89,8 @@
     <_ContentIncludedByDefault Remove="build\publish\wwwroot\sample-data\weather.json" />
     <_ContentIncludedByDefault Remove="build\publish\wwwroot\_framework\blazor.boot.json" />
     <_ContentIncludedByDefault Remove="build\wwwroot\_framework\blazor.boot.json" />
+    <_ContentIncludedByDefault Remove="publish\web.config" />
+    <_ContentIncludedByDefault Remove="publish\wwwroot\_framework\blazor.boot.json" />
   </ItemGroup>
 
 </Project>

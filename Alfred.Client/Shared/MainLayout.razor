@@ -16,11 +16,11 @@
             <div class="col-6 d-flex align-items-center justify-content-end">
                 <RadzenProfileMenu class="bg-dark" style="border: 0; vertical-align: middle">
                     <Template>
-                        <RadzenGravatar Email="@AuthService.User?.Email" />
+                        <RadzenGravatar Email="@AuthService.User?.Email"/>
                     </Template>
                     <ChildContent>
                         <RadzenProfileMenuItem Text="Accounts" Path="@_accountsUrl" Icon="account_circle"/>
-                        <RadzenProfileMenuItem Text="Logout" Path="@_logOutUrl" Icon="login" />
+                        <RadzenProfileMenuItem Text="Logout" Path="@_logOutUrl" Icon="login"/>
                     </ChildContent>
                 </RadzenProfileMenu>
             </div>
@@ -80,9 +80,24 @@
         new MenuItem()
         {
             Text = "Accounts",
-            Path = "/Accounts",
             Icon = "account_balance_wallet",
-            Children = null
+            Children = new List<MenuItem>()
+            {
+                new MenuItem()
+                {
+                    Text = "List Users",
+                    Path = "/Admin/Users",
+                    Icon = "people_alt",
+                    Children = null
+                },
+                new MenuItem()
+                {
+                    Text = "List Staffs",
+                    Path = "/Admin/Staffs",
+                    Icon = "engineering",
+                    Children = null
+                },
+            }
         },
         new MenuItem()
         {

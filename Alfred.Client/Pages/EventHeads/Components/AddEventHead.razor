@@ -1,7 +1,4 @@
-﻿@using Tewr.Blazor.FileReader
-@using Alfred.Client.Dtos.Events
-@inject IFileReaderService FileReader
-@inject IEventHeadRepository EventHeadRepo
+﻿@inject IEventHeadRepository EventHeadRepo
 
 <RadzenTemplateForm Data="@_eventHead" Submit="@(async (EventHead args) => { await Submit(args); })">
     <div class="row">

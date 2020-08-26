@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Alfred.Client.Dtos.Events
+namespace Alfred.Client.Models
 {
     public class EventHead: ICloneable
     {

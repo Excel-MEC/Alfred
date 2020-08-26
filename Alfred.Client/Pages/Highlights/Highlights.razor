@@ -47,7 +47,7 @@
     bool _loading = false;
     string url = "/events/api/highlights";
 
-    async Task Reload(bool refresh=false)
+    async Task Reload(bool refresh = false)
     {
         _loading = true;
         _highlights = await State.GetHighlights(refresh);

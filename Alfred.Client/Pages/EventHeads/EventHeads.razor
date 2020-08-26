@@ -15,7 +15,7 @@
     </div>
 
 
-    <RadzenGrid @ref="@_eventHeadGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8" AllowSorting="true" Data="_eventHeads" TItem="EventHead" EditMode="DataGridEditMode.Single" RowUpdate="@(async (EventHead evehtHead) => await OnUpdateRow(evehtHead))">
+    <RadzenGrid @ref="@_eventHeadGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8" AllowSorting="true" Data="_eventHeads" TItem="EventHead" EditMode="DataGridEditMode.Single" RowUpdate="@(async (EventHead eventHead) => await OnUpdateRow(eventHead))">
         <Columns>
             <RadzenGridColumn TItem="EventHead" Property="Id" Title="Id"/>
             <RadzenGridColumn TItem="EventHead" Property="Name" Title="Name">

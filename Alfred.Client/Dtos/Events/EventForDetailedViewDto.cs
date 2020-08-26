@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Alfred.Client.Models;
 
 namespace Alfred.Client.Dtos.Events
 {

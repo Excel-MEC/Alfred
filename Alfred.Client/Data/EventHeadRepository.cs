@@ -5,10 +5,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Alfred.Client.Data.Interfaces;
-using Alfred.Client.Dtos.Events;
-using Alfred.Client.Services;
+using Alfred.Client.Models;
 using Alfred.Client.Services.Interfaces;
-using Radzen;
 
 namespace Alfred.Client.Data
 {

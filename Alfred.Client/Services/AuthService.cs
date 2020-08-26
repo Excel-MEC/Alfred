@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -37,8 +38,15 @@ namespace Alfred.Client.Services
                 {
                     Id = Convert.ToInt32(result["user_id"].ToString()),
                     Email = result["email"].ToString(),
-                    Roles = result["role"].ToString().Split(",")
                 };
+                try
+                {
+                    User.Roles = JsonSerializer.Deserialize<string[]>(result["role"].ToString());
+                }
+                catch
+                {
+                    User.Roles = result["role"].ToString().Split(",").Select(x => x.Trim()).ToArray();
+                }
             }
             catch (Exception e)
             {

@@ -39,6 +39,7 @@ namespace Alfred.Client
             services.AddSingleton<IHighlightRepository, HighlightRepository>();
             services.AddSingleton<IEventRepository, EventRepository>();
             services.AddSingleton<IEventHeadRepository, EventHeadRepository>();
+            services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<NotificationService>();
             services.AddScoped<DialogService>();
             services.AddSingleton<ICustomNotification, CustomNotification>();

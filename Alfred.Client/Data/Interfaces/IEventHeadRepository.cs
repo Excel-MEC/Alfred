@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Alfred.Client.Dtos.Events;
+using Alfred.Client.Models;
 
 namespace Alfred.Client.Data.Interfaces
 {
