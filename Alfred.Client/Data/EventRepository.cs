@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -6,7 +7,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Alfred.Client.Data.Interfaces;
 using Alfred.Client.Dtos.Events;
+using Alfred.Client.Models;
 using Alfred.Client.Services.Interfaces;
+using AutoMapper;
 
 namespace Alfred.Client.Data
 {
@@ -15,85 +18,43 @@ namespace Alfred.Client.Data
         private readonly IApiService _apiService;
         private readonly IStateService _stateService;
         private readonly ICustomNotification _notification;
+        private readonly IMapper _mapper;
         private const string Url = "/events/api/events";
 
-        public EventRepository(IApiService apiService, IStateService stateService, ICustomNotification notification)
+        public EventRepository(IApiService apiService, IStateService stateService, ICustomNotification notification, IMapper mapper)
         {
             _apiService = apiService;
             _stateService = stateService;
+            _mapper = mapper;
             _notification = notification;
         }
 
         public async Task<EventForDetailedViewDto> GetEvent(int id)
         {
-            var client = await _apiService.Client();
-            var eventForView = await client.GetFromJsonAsync<EventForDetailedViewDto>($"{Url}/{id}");
-            client.Dispose();
-            return eventForView;
+            return await _apiService.GetFromJsonAsync<EventForDetailedViewDto>($"{Url}/{id}");
         }
 
-        public async Task<DataForAddingEventDto> AddEvent(DataForAddingEventDto newEvent)
+        public async Task<Event> AddEvent(DataForAddingEventDto newEvent)
         {
-            try
+            if (newEvent.Icon.Data == null)
             {
-                var client = await _apiService.Client();
-                if (newEvent.Icon.Data == null)
-                {
-                    _notification.Error("Icon Should not be null");
-                    throw new Exception("Icon Should not be null");
-                }
-
-                var content = GetFormDataContent(newEvent);
-                var response = await client.PostAsync("/events/api/events", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    _notification.Success("Successfully Added new Event");
-                    newEvent.Icon.Data?.Dispose();
-                    client.Dispose();
-                    return new DataForAddingEventDto();
-                }
-
-                _notification.Error("Error During uploading");
-
-                client.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _notification.Error("Something Went Wrong");
+                _notification.Error("Icon Should not be null");
+                throw new Exception("Icon Should not be null");
             }
 
-            return newEvent;
+            var content = GetFormDataContent(newEvent);
+            var eventFromServer = await _apiService.PostFormAsync<Event>("/events/api/events", content);
+            newEvent.Icon.Data?.Dispose();
+
+            return eventFromServer;
         }
 
-        public async Task<DataForAddingEventDto> UpdateEvent(DataForAddingEventDto updatedEvent, int id)
+        public async Task<Event> UpdateEvent(DataForAddingEventDto updatedEvent, int id)
         {
-            try
-            {
-                var client = await _apiService.Client();
-                var content = GetFormDataContent(updatedEvent);
-                content.Add(new StringContent(id.ToString()), "Id");
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri(Url),
-                    Content = content
-                };
-                var response = await client.SendAsync(request);
-                if (response.IsSuccessStatusCode)
-                    _notification.Success("Successfully Updated Event");
-                else
-                    _notification.Error("Error During uploading");
-
-                client.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _notification.Error("Something Went Wrong");
-            }
-
-            return updatedEvent;
+            var content = GetFormDataContent(updatedEvent);
+            content.Add(new StringContent(id.ToString()), "Id");
+            var eventFromRepo = await _apiService.PutFormAsync<Event>(Url, content);
+            return eventFromRepo;
         }
 
         public async Task DeleteEvent(EventForListViewDto eventForDelete)
@@ -101,28 +62,14 @@ namespace Alfred.Client.Data
             try
             {
                 var events = await _stateService.GetEventList();
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Delete,
-                    RequestUri = new Uri(Url),
-                    Content = new StringContent(
-                        JsonSerializer.Serialize(new {Id = eventForDelete.Id, Name = eventForDelete.Name}),
-                        Encoding.UTF8,
-                        "application/json")
-                };
-                var client = await _apiService.Client();
-                var response = await client.SendAsync(request);
-                if (response.IsSuccessStatusCode)
-                    _notification.Success("Successfully Deleted Event");
-                else
-                    _notification.Error("Failed to Delete Event");
-
-                events.Remove(eventForDelete);
-                client.Dispose();
+                var eventFromRepo =
+                    await _apiService.DeleteJsonAsync<Event>(Url, new {Id = eventForDelete.Id, Name = eventForDelete.Name});
+                var deletedEvent = _mapper.Map<EventForListViewDto>(eventFromRepo);
+                var deletedEventInList = events.FirstOrDefault(x => x.Id == deletedEvent.Id);
+                events.Remove(deletedEventInList);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
                 _notification.Error("Something Went Wrong");
             }
         }

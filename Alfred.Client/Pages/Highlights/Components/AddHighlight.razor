@@ -63,7 +63,17 @@
     async Task Submit(DataForAddingHighlightDto newHighlight)
     {
         _loading = true;
-        await HighlightRepo.AddHighlight(newHighlight);
+        try
+        {
+            var highlight = await HighlightRepo.AddHighlight(newHighlight);
+            var highlights = await State.GetHighlights();
+            highlights.Add(highlight);
+            State.StateChanged.Invoke();
+        }
+        catch
+        {
+            Notification.Error("Somthing went wrong");
+        }
         Cancel();
         _loading = false;
     }

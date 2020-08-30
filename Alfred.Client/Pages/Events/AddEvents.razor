@@ -78,7 +78,18 @@
     async Task Submit(DataForAddingEventDto newEvent)
     {
         _loading = true;
-        _newEvent = await EventRepo.AddEvent(newEvent);
+        try
+        {
+            var eventFromRepo = await EventRepo.AddEvent(newEvent);
+            var eventForList = Mapper.Map<EventForListViewDto>(eventFromRepo);
+            var events = await State.GetEventList();
+            events.Add(eventForList);
+            State.StateChanged?.Invoke();
+        }
+        catch
+        {
+            Notification.Error("Something went Wrong, Make sure all required fields are filled");
+        }
         _loading = false;
     }
 

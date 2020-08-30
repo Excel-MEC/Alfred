@@ -5,8 +5,8 @@ namespace Alfred.Client.Data.Interfaces
 {
     public interface IEventHeadRepository
     {
-        Task AddEventHead(EventHead newEventHead);
+        Task<EventHead> AddEventHead(EventHead newEventHead);
         Task UpdateEventHead(EventHead eventHead);
-        Task DeleteEventHead(EventHead eventHead);
+        Task<EventHead> DeleteEventHead(EventHead eventHead);
     }
 }

@@ -59,8 +59,18 @@
     async Task Submit(EventHead newEventHead)
     {
         _loading = true;
-        await EventHeadRepo.AddEventHead(newEventHead);
-        Cancel();
+        try
+        {
+            newEventHead = await EventHeadRepo.AddEventHead(newEventHead);
+            var eventHeads = await State.GetEventHeads();
+            eventHeads.Add(newEventHead);
+            State.StateChanged.Invoke();
+            Cancel();
+        }
+        catch
+        {
+            Notification.Error("Something went wrong");
+        }
         _loading = false;
     }
 

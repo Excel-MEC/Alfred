@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using System.Web;
 using Alfred.Client.Data.Interfaces;
 using Alfred.Client.Dtos.Admin;
+using Alfred.Client.Models;
 using Alfred.Client.Services;
 using Alfred.Client.Services.Interfaces;
+using AutoMapper;
 
 namespace Alfred.Client.Data
 {
@@ -16,37 +18,23 @@ namespace Alfred.Client.Data
     {
         private readonly ICustomNotification _notification;
         private readonly IApiService _apiService;
+        private readonly IMapper _mapper;
 
-        public UserRepository(IApiService apiService, ICustomNotification notification)
+        public UserRepository(IApiService apiService, ICustomNotification notification, IMapper mapper)
         {
             _apiService = apiService;
             _notification = notification;
+            _mapper = mapper;
         }
 
-        public async Task UpdateRole(DataForUpdatingRoleDto dataForUpdatingRole)
+        public async Task<StaffForListViewDto> UpdateRole(DataForUpdatingRoleDto dataForUpdatingRole)
         {
-            var client = await _apiService.Client();
             if (string.IsNullOrEmpty(dataForUpdatingRole.Role) || string.IsNullOrWhiteSpace(dataForUpdatingRole.Role))
                 dataForUpdatingRole.Role = "User";
-            try
-            {
-                var response = await client.PostAsJsonAsync(
-                    "https://staging.accounts.excelmec.org/api/admin/users/permission",
-                    dataForUpdatingRole);
-                if (response.IsSuccessStatusCode)
-                    _notification.Success("Successfully updated the Role");
-                else if (response.StatusCode == HttpStatusCode.Forbidden)
-                    _notification.Warning("You don't have the permission to do that");
-                else
-                    _notification.Error("Failed to update the Role");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _notification.Error("Something went wrong");
-            }
-
-            client.Dispose();
+            var updatedUser = await _apiService.PostJsonAsync<UserForListViewDto>(
+                "accounts/api/admin/users/permission", dataForUpdatingRole);
+            var updatedStaff = _mapper.Map<StaffForListViewDto>(updatedUser);
+            return updatedStaff;
         }
 
         public async Task<List<UserForListViewDto>> GetUsers(GetUserQueryParams queryParams)
@@ -56,9 +44,10 @@ namespace Alfred.Client.Data
                 select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(queryParams, null).ToString());
             string queryString = String.Join("&", properties.ToArray());
             var client = await _apiService.Client();
-            var users = await client.GetFromJsonAsync<UserListResponseDto>($"https://staging.accounts.excelmec.org/api/admin/users?{queryString}");
+            var users = await client.GetFromJsonAsync<UserListResponseDto>(
+                $"https://staging.accounts.excelmec.org/api/admin/users?{queryString}");
             client.Dispose();
-            if(!users.Data.Any())
+            if (!users.Data.Any())
                 _notification.Warning("No matching users");
             return users.Data;
         }

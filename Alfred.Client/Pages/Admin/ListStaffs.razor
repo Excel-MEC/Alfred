@@ -16,7 +16,7 @@
     </div>
 
     <RadzenGrid @ref="@_staffGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="20"
-                AllowSorting="true" Data="@_staffs" TItem="StaffForListViewDto" EditMode="DataGridEditMode.Single" RowUpdate="@(async (StaffForListViewDto staff) => await Submit(staff))">
+                 AllowSorting="true" Data="@_staffs" TItem="StaffForListViewDto" EditMode="DataGridEditMode.Single" RowUpdate="@(async (StaffForListViewDto staff) => await Submit(staff))">
         <Columns>
             <RadzenGridColumn TItem="StaffForListViewDto" Property="Id" Title="Id" width="60px"/>
             <RadzenGridColumn TItem="StaffForListViewDto" Property="Name" Title="Name"/>
@@ -78,6 +78,7 @@
         _roles.Add(new RoleTemplate() {Role = Roles.Staff});
         _roles.Add(new RoleTemplate() {Role = Roles.User});
         await Refresh();
+        State.StateChanged += StateHasChanged;
     }
 
     async Task Submit(StaffForListViewDto staff)
@@ -90,7 +91,19 @@
                 Id = staff.Id,
                 Role = string.Join(",", staff.Role)
             };
-            await UserRepo.UpdateRole(dataForUpdatingRole);
+            try
+            {
+                var updatedStaff = await UserRepo.UpdateRole(dataForUpdatingRole);
+                if (updatedStaff.Role.Count() == 1 && updatedStaff.Role.First() == "User")
+                    _staffs.Remove(staff);
+                else
+                    staff.Role = updatedStaff.Role;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Notification.Error("Something Went Wrong");
+            }
         }
         else
         {
@@ -98,7 +111,7 @@
         }
         _loading = false;
     }
-    
+
     void SaveRow(StaffForListViewDto staff)
     {
         staff.Role = _editing;

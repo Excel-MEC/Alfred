@@ -3,23 +3,32 @@
 @inject IAuthService AuthService
 @inject IJSRuntime JsRuntime
 
-@if (_user != null)
+@if (loading)
 {
-    if (_authenticated)
-    {
-        @ChildContent
-    }
-    else
-    {
-        <h1 align="center">Sorry you are not authorized to view this page</h1>
-    }
+    <div class="spinner"></div>
 }
 else
 {
-    <span @onclick="ReAuthorize">
-      <Login/>
-    </span>
- }
+    if (_user != null)
+    {
+        if (_authenticated)
+        {
+            @ChildContent
+        }
+        else
+        {
+            <h1 align="center">Sorry you are not authorized to view this page</h1>
+        }
+    }
+    else
+    {
+        <span @onclick="ReAuthorize">
+            <Login/>
+        </span>
+    }
+}
+
+<input type="hidden" id="messenger" @bind="_jwt"/>
 
 @code {
 
@@ -28,6 +37,9 @@ else
 
     [Parameter]
     public string Role { get; set; }
+
+    bool loading = true;
+    string _jwt;
 
     User _user;
     bool _authenticated = false;
@@ -39,6 +51,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        loading = true;
         await AuthService.Authorize();
         _user = AuthService.User;
         if (_user != null)
@@ -53,6 +66,7 @@ else
                 }
             }
         }
+        loading = false;
     }
 
 }

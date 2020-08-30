@@ -8,7 +8,7 @@ namespace Alfred.Client.Data.Interfaces
 {
     public interface IHighlightRepository
     {
-        Task AddHighlight(DataForAddingHighlightDto newHighlight);
+        Task<Highlight> AddHighlight(DataForAddingHighlightDto newHighlight);
         Task DeleteHighlight(Highlight highlight);
     }
 }

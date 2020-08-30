@@ -2,6 +2,7 @@
 @using System.Text
 @using System.Text.Json
 @using Alfred.Client.Pages.Highlights.Components
+@inject IHighlightRepository HighlightRepo
 
 
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
@@ -19,7 +20,7 @@
                 <Columns>
                     <RadzenGridColumn TItem="Highlight" Property="Id" Title="Id" width="70px"/>
                     <RadzenGridColumn TItem="Highlight" Property="Name" Title="Name"/>
-                    <RadzenGridColumn TItem="Highlight" Property="Icon" Title="Icon" Filterable="false">
+                    <RadzenGridColumn TItem="Highlight" Property="Icon" Title="Icon" Filterable="false" Sortable="false">
                         <Template Context="data">
                             <RadzenImage Path="@data?.Image" style="max-height: 80px"/>
                         </Template>
@@ -45,7 +46,6 @@
 @code {
     List<Highlight> _highlights = new List<Highlight>();
     bool _loading = false;
-    string url = "/events/api/highlights";
 
     async Task Reload(bool refresh = false)
     {
@@ -58,23 +58,14 @@
     {
         _loading = true;
         ds.Close(true);
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Delete,
-            RequestUri = new Uri(url),
-            Content = new StringContent(JsonSerializer.Serialize(new {Id = highlight.Id, Name = highlight.Name}), Encoding.UTF8, "application/json")
-        };
-        var client = await ApiService.Client();
-        await client.SendAsync(request);
-        _highlights.Remove(highlight);
-        Notification.Success("Successfully Deleted");
-        client.Dispose();
+        await HighlightRepo.DeleteHighlight(highlight);
         _loading = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
         await Reload();
+        State.StateChanged += StateHasChanged;
     }
 
     async Task ShowConfirmDialogue(Highlight highlight) => await Dialog.OpenAsync("Alert", ds =>

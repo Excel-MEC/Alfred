@@ -85,7 +85,15 @@
     async Task Submit(DataForAddingEventDto updatedEvent)
     {
         _loading = true;
-        _event = await EventRepo.UpdateEvent(updatedEvent, Id);
+        try
+        {
+            var updatedEventFromRepo = await EventRepo.UpdateEvent(updatedEvent, Id);
+            _event = Mapper.Map<DataForAddingEventDto>(updatedEventFromRepo);
+        }
+        catch
+        {
+            Notification.Error("Something Went Wrong");
+        }
         _loading = false;
     }
 

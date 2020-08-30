@@ -24,77 +24,26 @@ namespace Alfred.Client.Data
             _stateService = stateService;
         }
 
-        public async Task AddEventHead(EventHead newEventHead)
+        public async Task<EventHead> AddEventHead(EventHead newEventHead)
         {
-            try
-            {
-                var client = await _apiService.Client();
-                var response = await client.PostAsJsonAsync(Url, newEventHead);
-                if (response.IsSuccessStatusCode)
-                    _notification.Success("Successfully added new EventHead");
-                else
-                    _notification.Error("Failed to add new Eventhead");
-                client.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _notification.Error("Something Went Wrong");
-            }
+            return await _apiService.PostJsonAsync<EventHead>(Url, newEventHead);
         }
 
         public async Task UpdateEventHead(EventHead eventHead)
         {
             try
             {
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri(Url),
-                    Content = new StringContent(JsonSerializer.Serialize(eventHead), Encoding.UTF8, "application/json")
-                };
-                var client = await _apiService.Client();
-                var response = await client.SendAsync(request);
-                if (response.IsSuccessStatusCode)
-                    _notification.Success("Successfully updated");
-                else
-                    _notification.Error("Failed to Update");
-                client.Dispose();
+                await _apiService.PutJsonAsync(Url, eventHead);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
                 _notification.Error("Something went wrong");
             }
         }
 
-        public async Task DeleteEventHead(EventHead eventHead)
+        public async Task<EventHead> DeleteEventHead(EventHead eventHead)
         {
-            try
-            {
-                var eventHeads = await _stateService.GetEventHeads();
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Delete,
-                    RequestUri = new Uri(Url),
-                    Content = new StringContent(JsonSerializer.Serialize(eventHead), Encoding.UTF8, "application/json")
-                };
-                var client = await _apiService.Client();
-                var response = await client.SendAsync(request);
-                if (response.IsSuccessStatusCode)
-                {
-                    _notification.Success("Successfully Deleted");
-                    eventHeads.Remove(eventHead);
-                }
-                else
-                    _notification.Error("Failed to Delete");
-                client.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _notification.Error("Something Went Wrong");
-            }
+            return await _apiService.DeleteJsonAsync<EventHead>(Url, eventHead);
         }
     }
 }

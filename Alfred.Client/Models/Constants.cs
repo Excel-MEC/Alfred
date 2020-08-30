@@ -10,18 +10,9 @@ namespace Alfred.Client.Models
         public List<string> EventStatus { get; set; }
         public Constants()
         {
-            Category = new List<string>()
-            {
-                "All"
-            };
-            EventType = new List<string>()
-            {
-                "All"
-            };
-            EventStatus = new List<string>()
-            {
-                "All"
-            };
+            Category = new List<string>();
+            EventType = new List<string>();
+            EventStatus = new List<string>();
         }
     }
 }

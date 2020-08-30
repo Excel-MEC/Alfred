@@ -4,7 +4,7 @@
 
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Name"/>
+            <RadzenLabel Text="Name *"/>
         </div>
         <div class="col-md-9">
             <RadzenTextBox style="width: 100%;" @bind-value="Event.Name" Name="EventName"/>
@@ -13,7 +13,7 @@
 
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Icon"/>
+            <RadzenLabel Text="Icon *"/>
         </div>
 
         <div class="col-md-9 align-items-center file">
@@ -27,7 +27,7 @@
     </div>
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Category"/>
+            <RadzenLabel Text="Category *"/>
         </div>
         <div class="col-md-9">
             <RadzenDropDown @bind-Value="Event.CategoryId" AllowClear="true" Placeholder="Select something" Data="@_constants.Category.Select(category => new {Id = _constants.Category.IndexOf(category), Value = category})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
@@ -36,7 +36,7 @@
     </div>
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Event Type"/>
+            <RadzenLabel Text="Event Type *"/>
         </div>
         <div class="col-md-9">
             <RadzenDropDown @bind-Value="Event.EventTypeId" AllowClear="true" Placeholder="Select something" Data="@_constants.EventType.Select(eventType => new {Id = _constants.EventType.IndexOf(eventType), Value = eventType})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">
@@ -46,7 +46,7 @@
 
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="About"/>
+            <RadzenLabel Text="About *"/>
         </div>
         <div class="col-md-9">
             <RadzenTextArea @bind-Value="@Event.About" Rows="4" style="width: 100%"/>

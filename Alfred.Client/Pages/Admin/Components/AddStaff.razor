@@ -83,7 +83,17 @@
                 Id = candidate.Id,
                 Role = "User,Staff"
             };
-            await UserRepo.UpdateRole(dataForUpdatingRole);
+            try
+            {
+                var newStaff = await UserRepo.UpdateRole(dataForUpdatingRole);
+                var staffList = await State.StaffList();
+                staffList.Add(newStaff);
+                State.StateChanged.Invoke();
+            }
+            catch
+            {
+                Notification.Error("Something went Wrong");
+            }
             Cancel();
         }
         else

@@ -1,7 +1,4 @@
 ﻿@page "/Events/EventHeads"
-@using Alfred.Client.Dtos.Events
-@using System.Text.Json
-@using System.Text
 @using Alfred.Client.Pages.EventHeads.Components
 @inject IEventHeadRepository EventHeadRepo
 
@@ -80,6 +77,7 @@
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
+        State.StateChanged += StateHasChanged;
     }
 
     async Task OnUpdateRow(EventHead eventHead)
@@ -110,7 +108,16 @@
     {
         ds.Close(true);
         _loading = true;
-        await EventHeadRepo.DeleteEventHead(eventHead);
+        try
+        {
+            eventHead = await EventHeadRepo.DeleteEventHead(eventHead);
+            var deletedEventHead = _eventHeads.Find(x => x.Id == eventHead.Id);
+            _eventHeads.Remove(deletedEventHead);
+        }
+        catch
+        {
+            Notification.Error("Something went wrong");
+        }
         _loading = false;
         await Refresh();
     }

@@ -20,9 +20,10 @@ namespace Alfred.Client.Services
         private Constants Constants { get; set; }
         private UserListResponseDto Users { get; set; }
         private List<StaffForListViewDto> Staffs { get; set; }
+        public Action StateChanged { get; set; }
 
 
-        public StateService(IApiService apiService, IMapper mapper)
+        public StateService(IApiService apiService, IMapper mapper, ICustomNotification notification)
         {
             _apiService = apiService;
             _mapper = mapper;
@@ -31,36 +32,28 @@ namespace Alfred.Client.Services
         public async Task<List<EventForListViewDto>> GetEventList(bool refresh = false)
         {
             if (!refresh && EventsList != null) return EventsList;
-            var client = await _apiService.Client();
-            EventsList = await client.GetFromJsonAsync<List<EventForListViewDto>>("/events/api/events");
-            client.Dispose();
+            EventsList = await _apiService.GetFromJsonAsync<List<EventForListViewDto>>("events/api/events");
             return EventsList;
         }
 
         public async Task<Constants> GetConstants(bool refresh = false)
         {
             if (!refresh && Constants != null) return Constants;
-            var client = await _apiService.Client();
-            Constants = await client.GetFromJsonAsync<Constants>("events/api/constants");
-            client.Dispose();
+            Constants = await _apiService.GetFromJsonAsync<Constants>("events/api/constants");
             return Constants;
         }
 
         public async Task<List<EventHead>> GetEventHeads(bool refresh = false)
         {
             if (!refresh && EventHeads != null) return EventHeads;
-            var client = await _apiService.Client();
-            EventHeads = await client.GetFromJsonAsync<List<EventHead>>("events/api/eventhead");
-            client.Dispose();
+            EventHeads = await _apiService.GetFromJsonAsync<List<EventHead>>("events/api/eventhead");
             return EventHeads;
         }
 
         public async Task<List<Highlight>> GetHighlights(bool refresh = false)
         {
             if (!refresh && Highlights != null) return Highlights;
-            var client = await _apiService.Client();
-            Highlights = await client.GetFromJsonAsync<List<Highlight>>("events/api/highlights");
-            client.Dispose();
+            Highlights = await _apiService.GetFromJsonAsync<List<Highlight>>("events/api/highlights");
             return Highlights;
         }
 
@@ -68,8 +61,8 @@ namespace Alfred.Client.Services
         {
             if (!refresh && Users != null) return Users;
             var client = await _apiService.Client();
-            Users = await client.GetFromJsonAsync<UserListResponseDto>(
-                "https://staging.accounts.excelmec.org/api/admin/users");
+            Users = await _apiService.GetFromJsonAsync<UserListResponseDto>(
+                "accounts/api/admin/users");
             client.Dispose();
             return Users;
         }
@@ -77,14 +70,12 @@ namespace Alfred.Client.Services
         public async Task<List<StaffForListViewDto>> StaffList(bool refresh = false)
         {
             if (!refresh && Staffs != null) return Staffs;
-            var client = await _apiService.Client();
             var staffResponse =
-                await client.GetFromJsonAsync<List<UserForListViewDto>>(
-                    "https://staging.accounts.excelmec.org/api/admin/staffs");
+                await _apiService.GetFromJsonAsync<List<UserForListViewDto>>(
+                    "accounts/api/admin/staffs");
             Staffs = new List<StaffForListViewDto>();
             foreach (var staff in staffResponse)
                 Staffs.Add(_mapper.Map<StaffForListViewDto>(staff));
-            client.Dispose();
             return Staffs;
         }
     }

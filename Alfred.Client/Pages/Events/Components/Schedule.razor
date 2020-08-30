@@ -3,7 +3,7 @@
 
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Venue"/>
+            <RadzenLabel Text="Venue *"/>
         </div>
         <div class="col-md-9">
             <RadzenTextBox style="width: 100%;" @bind-value="Event.Venue"/>
@@ -20,7 +20,7 @@
 
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Date Time"/>
+            <RadzenLabel Text="Date Time *"/>
         </div>
         <div class="col-md-9">
             <RadzenDatePicker ShowTime="true" style="width:100%" Name="EventDateTime" @bind-Value="Event.Datetime" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt"/>
@@ -47,7 +47,7 @@
 
     <div class="row">
         <div class="col-md-3 align-items-center d-flex">
-            <RadzenLabel Text="Event Status"/>
+            <RadzenLabel Text="Event Status *"/>
         </div>
         <div class="col-md-9">
             <RadzenDropDown @bind-Value="Event.EventStatusId" AllowClear="true" Placeholder="Select something" Data="@_constants.EventStatus.Select(eventStatus => new {Id = _constants.EventStatus.IndexOf(eventStatus), Value = eventStatus})" style="width: 100%;" TextProperty="Value" ValueProperty="Id">

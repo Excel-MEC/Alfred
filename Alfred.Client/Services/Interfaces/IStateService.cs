@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Alfred.Client.Dtos.Admin;
 using Alfred.Client.Dtos.Events;
@@ -14,5 +15,6 @@ namespace Alfred.Client.Services.Interfaces
         Task<List<Highlight>> GetHighlights(bool refresh = false);
         Task<UserListResponseDto> UserList(bool refresh = false);
         Task<List<StaffForListViewDto>> StaffList(bool refresh = false);
+        public Action StateChanged { get; set; }
     }
 }

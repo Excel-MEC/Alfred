@@ -15,10 +15,12 @@ namespace Alfred.Client.Services
     {
         public User User { get; set; }
         private readonly IJSRuntime _jsRuntime;
+        private readonly IApiService _apiService;
 
-        public AuthService(IJSRuntime jsRuntime)
+        public AuthService(IJSRuntime jsRuntime, IApiService apiService)
         {
             _jsRuntime = jsRuntime;
+            _apiService = apiService;
         }
 
         public async Task Authorize()
@@ -26,6 +28,11 @@ namespace Alfred.Client.Services
             try
             {
                 var token = await _jsRuntime.InvokeAsync<string>("getJwt");
+                if (string.IsNullOrEmpty(token) || token == "null")
+                {
+                    token = await _apiService.GetNewJwt();
+                }
+
                 string[] jwtEncodedSegments = token.Split('.');
                 var payloadSegment = jwtEncodedSegments[1].Trim();
                 payloadSegment =

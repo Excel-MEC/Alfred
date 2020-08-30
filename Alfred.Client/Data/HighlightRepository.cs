@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -27,47 +28,32 @@ namespace Alfred.Client.Data
             _state = state;
         }
 
-        public async Task AddHighlight(DataForAddingHighlightDto newHighlight)
+        public async Task<Highlight> AddHighlight(DataForAddingHighlightDto newHighlight)
         {
-            try
-            {
-                var client = await _apiService.Client();
-                var content = new MultipartFormDataContent();
-                content.Headers.ContentDisposition =
-                    new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-                content.Add(new StreamContent(newHighlight.Image.Data, (int) newHighlight.Image.Data.Length), "Image",
-                    newHighlight.Image.Name);
-                content.Add(new StringContent(newHighlight.Name), "Name");
-                var response = await client.PostAsync(_url, content);
-                if (response.IsSuccessStatusCode)
-                    _notification.Success("Successfully Added new Highlight");
-                else
-                    _notification.Error("Something Went Wrong");
-
-                client.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                _notification.Error("Something Went Wrong");
-            }
+            var content = new MultipartFormDataContent();
+            content.Headers.ContentDisposition =
+                new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+            content.Add(new StreamContent(newHighlight.Image.Data, (int) newHighlight.Image.Data.Length), "Image",
+                newHighlight.Image.Name);
+            content.Add(new StringContent(newHighlight.Name), "Name");
+            var highlight = await _apiService.PostFormAsync<Highlight>(_url, content);
+            return highlight;
         }
 
         public async Task DeleteHighlight(Highlight highlight)
         {
-            var request = new HttpRequestMessage
+            try
             {
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri(_url),
-                Content = new StringContent(JsonSerializer.Serialize(new {Id = highlight.Id, Name = highlight.Name}),
-                    Encoding.UTF8, "application/json")
-            };
-            var client = await _apiService.Client();
-            var highlights = await _state.GetHighlights();
-            await client.SendAsync(request);
-            highlights.Remove(highlight);
-            _notification.Success("Successfully Deleted");
-            client.Dispose();
+                var deletedHighlight=
+                    await _apiService.DeleteJsonAsync<Highlight>(_url, new {Id = highlight.Id, Name = highlight.Name});
+                var highlights = await _state.GetHighlights();
+                var highlightInState = highlights.FirstOrDefault(x => x.Id == deletedHighlight.Id);
+                highlights.Remove(highlightInState);
+            }
+            catch
+            {
+                _notification.Error("Something went wrong");
+            }
         }
     }
 }
