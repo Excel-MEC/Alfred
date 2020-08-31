@@ -2,7 +2,7 @@
 using Alfred.Client.Models;
 using Alfred.Client.Models.Custom;
 
-namespace Alfred.Client.Dtos.Admin
+namespace Alfred.Client.Dtos.Accounts
 {
     public class UserListResponseDto
     {

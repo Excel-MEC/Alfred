@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Dtos.Events;
 using Alfred.Client.Models;
 
@@ -10,5 +12,6 @@ namespace Alfred.Client.Data.Interfaces
         Task<Event> AddEvent(DataForAddingEventDto newEvent);
         Task<Event> UpdateEvent(DataForAddingEventDto updatedEvent, int id);
         Task DeleteEvent(EventForListViewDto eventForDelete);
+        Task<List<UserForListViewDto>> Registrations(int eventId);
     }
 }

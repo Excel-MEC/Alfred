@@ -1,0 +1,88 @@
+﻿@page "/Admin/Users"
+@using Alfred.Client.Dtos.Accounts
+@inject IUserRepository UserRepo
+
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
+    <RadzenTemplateForm Data="@_userQuery" Submit="@(async (GetUserQueryParams query) => await Submit(query))">
+        <RadzenFieldset Text="Search Filters">
+            <div class="row mb-2">
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <RadzenNumeric style="width: 100%" TValue="int?" Placeholder="Excel Id" @bind-value="_userQuery.Id"/>
+                </div>
+                <div class="col-md-2">
+                    <RadzenTextBox style="width: 100%" Placeholder="Name" @bind-value="_userQuery.Name"/>
+                </div>
+                <div class="col-md-2">
+                    <RadzenTextBox style="width: 100%" Placeholder="Email" @bind-value="_userQuery.Email"/>
+                </div>
+                <div class="col-md-2 text-center">
+                    <RadzenButton Icon="search" Text="Search" ButtonType="ButtonType.Submit"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <RadzenTextBox style="width: 100%" Placeholder="Mobile Number" @bind-value="_userQuery.MobileNumber"/>
+                </div>
+                <div class="col-md-2">
+                    <RadzenDropDown AllowClear="true" TValue="string" Data="@_genders" TextProperty="Name" ValueProperty="Name" Style="width: 100%" Placeholder="Gender"/>
+                </div>
+                <div class="col-md-2">
+                    <RadzenCheckBox @bind-Value="_userQuery.IsPaid" TriState="true" TValue="bool?"/><RadzenLabel Text="Is Paid"/>
+                </div>
+                <div class="col-md-2 text-center">
+                    <RadzenButton Icon="cancel" Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+                </div>
+            </div>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+    <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="20"
+                AllowSorting="true" Data="@_users" TItem="UserForListViewDto">
+        <Columns>
+            <RadzenGridColumn TItem="UserForListViewDto" Property="Id" Title="Id" width="60px"/>
+            <RadzenGridColumn TItem="UserForListViewDto" Property="Name" Title="Name"/>
+            <RadzenGridColumn TItem="UserForListViewDto" Property="Email" Title="E-mail"/>
+            <RadzenGridColumn TItem="UserForListViewDto" Property="MobileNumber" Title="Phone"/>
+        </Columns>
+    </RadzenGrid>
+    @if (_loading)
+    {
+        <div class="spinner"></div>
+    }
+</AuthorizedView>
+
+@code{
+
+    List<UserForListViewDto> _users = new List<UserForListViewDto>();
+    List<Gender> _genders = new List<Gender>();
+    bool _loading = false;
+    GetUserQueryParams _userQuery;
+
+    protected override void OnInitialized()
+    {
+        _userQuery = new GetUserQueryParams();
+        _genders.Add(new Gender() {Name = "Male"});
+        _genders.Add(new Gender() {Name = "Female"});
+        _genders.Add(new Gender() {Name = "Other"});
+    }
+
+    private class Gender
+    {
+        public string Name { get; set; }
+    }
+
+    void Cancel()
+    {
+        _userQuery = new GetUserQueryParams();
+        _users = new List<UserForListViewDto>();
+    }
+
+    async Task Submit(GetUserQueryParams query)
+    {
+        _loading = true;
+        _users = await UserRepo.GetUsers(query);
+        _loading = false;
+    }
+
+}

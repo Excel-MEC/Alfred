@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Alfred.Client.Data.Interfaces;
-using Alfred.Client.Dtos.Admin;
+using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Models;
 using Alfred.Client.Services;
 using Alfred.Client.Services.Interfaces;
@@ -43,10 +43,9 @@ namespace Alfred.Client.Data
                 where p.GetValue(queryParams, null) != null
                 select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(queryParams, null).ToString());
             string queryString = String.Join("&", properties.ToArray());
-            var client = await _apiService.Client();
-            var users = await client.GetFromJsonAsync<UserListResponseDto>(
-                $"https://staging.accounts.excelmec.org/api/admin/users?{queryString}");
-            client.Dispose();
+            Console.WriteLine(queryString);
+            var users = await _apiService.GetFromJsonAsync<UserListResponseDto>(
+                $"accounts/api/admin/users?{queryString}");
             if (!users.Data.Any())
                 _notification.Warning("No matching users");
             return users.Data;

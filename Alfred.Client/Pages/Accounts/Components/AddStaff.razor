@@ -1,9 +1,9 @@
-﻿@using Alfred.Client.Dtos.Admin
+﻿@using Alfred.Client.Dtos.Accounts
 @inject IUserRepository UserRepo
 
 <div class="row">
     <div class="col-md-10">
-        <RadzenTextBox Placeholder="Excel-Id or Email" @bind-value="@_searchValue" Style="width: 100%"/>
+        <RadzenTextBox Placeholder="Excel-Id or Email"  @onkeyup="@(async(KeyboardEventArgs args) => await KeyUp(args))" @bind-value="@_searchValue" Style="width: 100%"/>
     </div>
     <div class="col-md-2">
         <RadzenButton Icon="search" style="width: 100%" Click="Search"/>
@@ -19,36 +19,15 @@
                     <RadzenDataList PageSize="1" WrapItems="true" AllowPaging="true"
                                     Data="@_candidates" TItem="UserForListViewDto">
                         <Template Context="candidate">
-                            <RadzenCard>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div>Excel Id:</div>
-                                        <b>@candidate.Id</b>
-                                        <div style="margin-top:20px">Name:</div>
-                                        <b>@candidate.Name</b>
-                                        <div style="margin-top:20px">Email:</div>
-                                        <b>@candidate.Email</b>
-                                        <br/>
-                                        <RadzenImage Path="@candidate.Picture" Style="width:100px;"/>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div>Gender:</div>
-                                        <b>@candidate.Gender</b>
-                                        <div style="margin-top:20px">Phone Number:</div>
-                                        <b>@candidate.MobileNumber</b>
-                                        <div style="margin-top:20px">QRCode:</div>
-                                        <RadzenImage Path="@candidate.QRCodeUrl" Style="width:100px;"/>
-                                    </div>
+                            <UserCard User="@candidate"/>
+                            <div class="row">
+                                <div class="col-md-6 text-center">
+                                    <RadzenButton Icon="person_add" Click="@(() => Submit(candidate))" Text="Add User"/>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-6 text-center">
-                                        <RadzenButton Icon="person_add" Click="@(()=>Submit(candidate))" Text="Add User"/>
-                                    </div>
-                                    <div class="col-md-6 text-center">
-                                        <RadzenButton Icon="close" Click="Cancel" Text="Cancel"/>
-                                    </div>
+                                <div class="col-md-6 text-center">
+                                    <RadzenButton Icon="close" Click="Cancel" Text="Cancel"/>
                                 </div>
-                            </RadzenCard>
+                            </div>
                         </Template>
                     </RadzenDataList>
                 </ChildContent>
@@ -115,6 +94,7 @@
 
     async Task Search()
     {
+        _loading = true;
         int id;
         var query = new GetUserQueryParams();
         if (Int32.TryParse(_searchValue, out id))
@@ -126,6 +106,15 @@
             query.Email = _searchValue;
         }
         _candidates = await UserRepo.GetUsers(query);
+        _loading = false;
+    }
+
+    async Task KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Search();
+        }
     }
 
 }

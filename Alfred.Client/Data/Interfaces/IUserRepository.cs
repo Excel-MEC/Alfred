@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Alfred.Client.Dtos.Admin;
+using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Models;
 
 namespace Alfred.Client.Data.Interfaces

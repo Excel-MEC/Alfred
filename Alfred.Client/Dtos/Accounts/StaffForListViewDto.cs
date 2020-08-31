@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Alfred.Client.Dtos.Admin
+namespace Alfred.Client.Dtos.Accounts
 {
     public class StaffForListViewDto
     {

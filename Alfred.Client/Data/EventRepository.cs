@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Alfred.Client.Data.Interfaces;
+using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Dtos.Events;
 using Alfred.Client.Models;
 using Alfred.Client.Services.Interfaces;
@@ -72,6 +74,13 @@ namespace Alfred.Client.Data
             {
                 _notification.Error("Something Went Wrong");
             }
+        }
+
+        public async Task<List<UserForListViewDto>> Registrations(int eventId)
+        {
+            var userIds = await _apiService.GetFromJsonAsync<int[]>($"/events/api/registration/{eventId}/users");
+            var users = await _apiService.PostJsonAsync<List<UserForListViewDto>>($"/accounts/api/admin/users", userIds,false);
+            return users;
         }
 
         private MultipartFormDataContent GetFormDataContent(DataForAddingEventDto newEvent)

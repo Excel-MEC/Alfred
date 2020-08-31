@@ -8,8 +8,8 @@ namespace Alfred.Client.Services.Interfaces
         Task<HttpClient> Client(string header=null);
         Task<TItem> GetFromJsonAsync<TItem>(string url);
         Task<string> GetAsync(string url);
-        Task<TItem> PostJsonAsync<TItem>(string url, object content);
-        Task<string> PostJsonAsync(string url, object content);
+        Task<TItem> PostJsonAsync<TItem>(string url, object content, bool notification=true);
+        Task<string> PostJsonAsync(string url, object content, bool notification=true);
         Task<TItem> PostFormAsync<TItem>(string url, MultipartFormDataContent content);
         Task<string> PostFormAsync(string url, MultipartFormDataContent content);
         Task<TItem> PutJsonAsync<TItem>(string url, object content);

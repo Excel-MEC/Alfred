@@ -1,0 +1,28 @@
+﻿@using Alfred.Client.Dtos.Accounts
+<RadzenCard>
+    <div class="row">
+        <div class="col-md-6">
+            <div>Excel Id:</div>
+            <b>@User.Id</b>
+            <div style="margin-top:20px">Name:</div>
+            <b>@User.Name</b>
+            <div style="margin-top:20px">Email:</div>
+            <b>@User.Email</b>
+            <br/>
+            <RadzenImage Path="@User.Picture" Style="width:100px;"/>
+        </div>
+        <div class="col-md-6">
+            <div>Gender:</div>
+            <b>@User.Gender</b>
+            <div style="margin-top:20px">Phone Number:</div>
+            <b>@User.MobileNumber</b>
+            <div style="margin-top:20px">QRCode:</div>
+            <RadzenImage Path="@User.QRCodeUrl" Style="width:100px;"/>
+        </div>
+    </div>
+</RadzenCard>
+
+@code{
+    [Parameter]
+    public UserForListViewDto User { get; set; }
+}

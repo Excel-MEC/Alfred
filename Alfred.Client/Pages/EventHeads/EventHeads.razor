@@ -30,7 +30,7 @@
                     <RadzenTextBox style="width: 100%;" @bind-value="eventHead.PhoneNumber"/>
                 </EditTemplate>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="EventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+            <RadzenGridColumn TItem="EventHead" Title="Edit" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
                 <Template Context="eventHead">
                     <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(eventHead))">
                     </RadzenButton>
@@ -42,16 +42,14 @@
                     </RadzenButton>
                 </EditTemplate>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="EventHead" Context="eventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
-                <Template Context="eventHead">
-                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
-                    </RadzenButton>
-                </Template>
-                <EditTemplate Context="eventHead">
-                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
-                    </RadzenButton>
-                </EditTemplate>
-            </RadzenGridColumn>
+            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}")>
+                <RadzenGridColumn TItem="EventHead" Title="Delete" Context="eventHead" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                    <Template Context="eventHead">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => ShowConfirmDialogue(eventHead))">
+                        </RadzenButton>
+                    </Template>
+                </RadzenGridColumn>
+            </RestrictedView>
         </Columns>
     </RadzenGrid>
 
@@ -67,7 +65,7 @@
     RadzenGrid<EventHead> _eventHeadGrid;
     EventHead _editing;
 
-    async Task Refresh(bool refresh=false)
+    async Task Refresh(bool refresh = false)
     {
         _loading = true;
         _eventHeads = await State.GetEventHeads(refresh);

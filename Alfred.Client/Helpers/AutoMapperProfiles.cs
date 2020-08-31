@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Alfred.Client.Dtos.Admin;
+using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Dtos.Events;
 using Alfred.Client.Extensions;
 using Alfred.Client.Models;

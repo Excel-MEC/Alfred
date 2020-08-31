@@ -62,13 +62,13 @@ namespace Alfred.Client.Services
             return await SendAsync(request);
         }
 
-        public async Task<TItem> PostJsonAsync<TItem>(string url, object content)
+        public async Task<TItem> PostJsonAsync<TItem>(string url, object content, bool notification =true)
         {
-            var response = await PostJsonAsync(url, content);
+            var response = await PostJsonAsync(url, content, notification);
             return JsonConvert.DeserializeObject<TItem>(response);
         }
 
-        public async Task<string> PostJsonAsync(string url, object content)
+        public async Task<string> PostJsonAsync(string url, object content, bool notification =true)
         {
             var request = new HttpRequestMessage
             {
@@ -76,14 +76,13 @@ namespace Alfred.Client.Services
                 RequestUri = GetUri(url),
                 Content = GetStringContent(content)
             };
-            return await SendAsync(request);
+            return await SendAsync(request, notification);
         }
 
         public async Task<TItem> PostFormAsync<TItem>(string url, MultipartFormDataContent content)
         {
             var response = await PostFormAsync(url, content);
             return JsonConvert.DeserializeObject<TItem>(response);
-
         }
 
         public async Task<string> PostFormAsync(string url, MultipartFormDataContent content)
@@ -118,7 +117,6 @@ namespace Alfred.Client.Services
         {
             var response = await PutFormAsync(url, content);
             return JsonConvert.DeserializeObject<TItem>(response);
-
         }
 
         public async Task<string> PutFormAsync(string url, MultipartFormDataContent content)
@@ -151,7 +149,7 @@ namespace Alfred.Client.Services
         }
 
 
-        private async Task<string> SendAsync(HttpRequestMessage message)
+        private async Task<string> SendAsync(HttpRequestMessage message, bool notification = true)
         {
             var client = await Client();
             var response = await client.SendAsync(message);
@@ -169,12 +167,15 @@ namespace Alfred.Client.Services
                     Content = message.Content,
                 };
                 var newResponse = await newClient.SendAsync(newMessage);
-                ShowNotification(newMessage.Method, newResponse.StatusCode);
+                if (notification)
+                    ShowNotification(newMessage.Method, newResponse.StatusCode);
                 var newResponseText = await newResponse.Content.ReadAsStringAsync();
                 newClient.Dispose();
                 return newResponseText;
             }
-            ShowNotification(message.Method, response.StatusCode);
+
+            if (notification)
+                ShowNotification(message.Method, response.StatusCode);
 
             client.Dispose();
             return responseText;
@@ -197,7 +198,6 @@ namespace Alfred.Client.Services
             var newTokens = await response.Content.ReadFromJsonAsync<Jwt>();
             client.Dispose();
             await _jsRuntime.InvokeVoidAsync("setJwt", newTokens.AccessToken);
-            _notification.Info("Jwt renewed");
             return newTokens.AccessToken;
         }
 

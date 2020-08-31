@@ -1,0 +1,38 @@
+﻿@inject IAuthService AuthService
+@inject IJSRuntime JsRuntime
+
+@if (_authenticated)
+{
+    @ChildContent
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Role { get; set; }
+
+    User _user;
+    bool _authenticated = false;
+
+
+    protected override void OnInitialized()
+    {
+        _user = AuthService.User;
+        if (_user != null)
+        {
+            Role ??= Roles.User;
+            var userRoles = _user.Roles;
+            foreach (var role in Role.Split(",").Select(x => x.Trim()))
+            {
+                if (userRoles.Contains(role))
+                {
+                    _authenticated = true;
+                }
+            }
+        }
+    }
+
+}

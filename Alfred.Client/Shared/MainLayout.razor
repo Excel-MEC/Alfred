@@ -4,7 +4,7 @@
 @inject IAuthService AuthService
 @inject IJSRuntime JsRuntime
 @inject NavigationManager Navigation
-<RadzenHeader class="bg-dark text-light border-0">
+<RadzenHeader class="bg-dark text-light border-0 top-level">
     <ChildContent>
         <div class="row justify-content-start align-items-center">
             <div class="col-6 d-flex align-items-center">
@@ -38,7 +38,7 @@
         </ChildContent>
     </RadzenBody>
 </div>
-<RadzenSidebar @bind-Expanded="@_sidebarExpanded" style="margin-top: 50px">
+<RadzenSidebar @bind-Expanded="@_sidebarExpanded" style="margin-top: 50px" class="top-level">
     <ChildContent>
         <RadzenPanelMenu>
             @foreach (var item in _menu)
@@ -85,14 +85,14 @@
             {
                 new MenuItem()
                 {
-                    Text = "List Users",
+                    Text = "Users",
                     Path = "/Admin/Users",
                     Icon = "people_alt",
                     Children = null
                 },
                 new MenuItem()
                 {
-                    Text = "List Staffs",
+                    Text = "Staffs",
                     Path = "/Admin/Staffs",
                     Icon = "engineering",
                     Children = null

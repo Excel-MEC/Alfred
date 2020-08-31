@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Alfred.Client.Dtos.Admin;
+using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Dtos.Events;
 using Alfred.Client.Models;
 using Alfred.Client.Services.Interfaces;
@@ -18,7 +18,6 @@ namespace Alfred.Client.Services
         private List<EventHead> EventHeads { get; set; }
         private List<Highlight> Highlights { get; set; }
         private Constants Constants { get; set; }
-        private UserListResponseDto Users { get; set; }
         private List<StaffForListViewDto> Staffs { get; set; }
         public Action StateChanged { get; set; }
 
@@ -55,16 +54,6 @@ namespace Alfred.Client.Services
             if (!refresh && Highlights != null) return Highlights;
             Highlights = await _apiService.GetFromJsonAsync<List<Highlight>>("events/api/highlights");
             return Highlights;
-        }
-
-        public async Task<UserListResponseDto> UserList(bool refresh = false)
-        {
-            if (!refresh && Users != null) return Users;
-            var client = await _apiService.Client();
-            Users = await _apiService.GetFromJsonAsync<UserListResponseDto>(
-                "accounts/api/admin/users");
-            client.Dispose();
-            return Users;
         }
 
         public async Task<List<StaffForListViewDto>> StaffList(bool refresh = false)

@@ -1,13 +1,9 @@
 ﻿@page "/Admin/Staffs"
-@using Alfred.Client.Dtos.Admin
-@using Alfred.Client.Dtos.Events
-@using Alfred.Client.Dtos.Highlights
-@using System.Data.Common
-@using System.Data
-@using Alfred.Client.Pages.Admin.Components
+@using Alfred.Client.Dtos.Accounts
+@using Alfred.Client.Pages.Accounts.Components
 @inject IUserRepository UserRepo
 
-<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <div class="row">
         <div class="col-md-12 text-right mb-2">
             <RadzenButton Text="Add Staff" Click="@(args => Dialog.Open<AddStaff>("Add Event Head", null, new DialogOptions() {Width = "700px"}))"/>
