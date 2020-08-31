@@ -43,7 +43,6 @@ namespace Alfred.Client.Data
                 where p.GetValue(queryParams, null) != null
                 select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(queryParams, null).ToString());
             string queryString = String.Join("&", properties.ToArray());
-            Console.WriteLine(queryString);
             var users = await _apiService.GetFromJsonAsync<UserListResponseDto>(
                 $"accounts/api/admin/users?{queryString}");
             if (!users.Data.Any())

@@ -95,9 +95,8 @@
                 else
                     staff.Role = updatedStaff.Role;
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
                 Notification.Error("Something Went Wrong");
             }
         }

@@ -26,7 +26,7 @@
                     <RadzenTextBox style="width: 100%" Placeholder="Mobile Number" @bind-value="_userQuery.MobileNumber"/>
                 </div>
                 <div class="col-md-2">
-                    <RadzenDropDown AllowClear="true" TValue="string" Data="@_genders" TextProperty="Name" ValueProperty="Name" Style="width: 100%" Placeholder="Gender"/>
+                    <RadzenDropDown AllowClear="true" TValue="string" @bind-value="_userQuery.Gender" Data="@_genders" TextProperty="Name" ValueProperty="Name" Style="width: 100%" Placeholder="Gender"/>
                 </div>
                 <div class="col-md-2">
                     <RadzenCheckBox @bind-Value="_userQuery.IsPaid" TriState="true" TValue="bool?"/><RadzenLabel Text="Is Paid"/>
