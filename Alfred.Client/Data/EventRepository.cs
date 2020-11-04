@@ -78,8 +78,7 @@ namespace Alfred.Client.Data
 
         public async Task<List<UserForListViewDto>> Registrations(int eventId)
         {
-            var userIds = await _apiService.GetFromJsonAsync<int[]>($"/events/api/registration/{eventId}/users");
-            var users = await _apiService.PostJsonAsync<List<UserForListViewDto>>($"/accounts/api/admin/users", userIds,false);
+            var users = await _apiService.GetFromJsonAsync<List<UserForListViewDto>>($"/events/api/registration/{eventId}/users");
             return users;
         }
 

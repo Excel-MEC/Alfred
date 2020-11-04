@@ -31,7 +31,7 @@ namespace Alfred.Client.Data
         {
             if (string.IsNullOrEmpty(dataForUpdatingRole.Role) || string.IsNullOrWhiteSpace(dataForUpdatingRole.Role))
                 dataForUpdatingRole.Role = "User";
-            var updatedUser = await _apiService.PostJsonAsync<UserForListViewDto>(
+            var updatedUser = await _apiService.PutJsonAsync<UserForListViewDto>(
                 "accounts/api/admin/users/permission", dataForUpdatingRole);
             var updatedStaff = _mapper.Map<StaffForListViewDto>(updatedUser);
             return updatedStaff;
