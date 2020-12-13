@@ -212,7 +212,8 @@ namespace Alfred.Client.Services
             }
             else if (url.StartsWith("/events/"))
             {
-                return new Uri($"https://staging.apis.excelmec.org{url}");
+                var newUrl = url.Replace("/events/api", "/api");
+                return new Uri($"https://staging.events.excelmec.org{newUrl}");
             }
             else
             {
