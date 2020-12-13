@@ -14,7 +14,7 @@ build site:
     paths:
       - ./publish
   only:
-    - master@excel-mec/excel-accounts/Excel-Accounts-Frontend
+    - master@excel-mec/Alfred
 
 deploy:
   image: node:13.5.0-alpine
@@ -22,4 +22,4 @@ deploy:
   script:
     - npx netlify deploy --prod --dir ./publish/wwwroot --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
   only:
-    - master@excel-mec/excel-accounts/Excel-Accounts-Frontend
+    - master@excel-mec/Alfred
