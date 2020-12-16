@@ -108,6 +108,7 @@ namespace Alfred.Client.Data
             content.Add(new StringContent(newEvent.PrizeMoney.ToString()), "PrizeMoney");
             content.Add(new StringContent(newEvent.NeedRegistration.ToString()), "NeedRegistration");
             content.Add(new StringContent(newEvent.IsTeam.ToString()), "IsTeam");
+            content.Add(new StringContent(newEvent.TeamSize.ToString()), "TeamSize");
             content.Add(new StringContent(newEvent.EventHead1Id.ToString()), "EventHead1Id");
             content.Add(new StringContent(newEvent.EventHead2Id.ToString()), "EventHead2Id");
             return content;

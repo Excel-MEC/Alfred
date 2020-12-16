@@ -12,7 +12,11 @@
                 </a>
             </div>
             <div class="col-md-9 mb-2 text-right">
-                @if (_event.NeedRegistration?? false)
+                
+                    <a href=@($"/Events/Edit/{_event.Id}")>
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="edit" Text="Edit"/>
+                    </a>
+                @if (_event.NeedRegistration ?? false)
                 {
                     <a href=@($"/Events/{_event.Id}/Registrations")>
                         <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="assignment_turned_in" Text="Registrations"/>
