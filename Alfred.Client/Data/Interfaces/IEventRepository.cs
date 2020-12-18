@@ -12,6 +12,6 @@ namespace Alfred.Client.Data.Interfaces
         Task<Event> AddEvent(DataForAddingEventDto newEvent);
         Task<Event> UpdateEvent(DataForAddingEventDto updatedEvent, int id);
         Task DeleteEvent(EventForListViewDto eventForDelete);
-        Task<List<UserForListViewDto>> Registrations(int eventId);
+        Task<List<RegistrationForViewDto>> Registrations(int eventId);
     }
 }

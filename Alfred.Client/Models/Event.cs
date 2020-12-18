@@ -30,5 +30,9 @@ namespace Alfred.Client.Models
         public int? NumberOfRounds { get; set; }
         public int? CurrentRound { get; set; }
         public bool? NeedRegistration { get; set; }
+        public bool? RegistrationOpen { get; set; }
+        public DateTime? RegistrationEndDate { get; set; }
+        public string Button { get; set; }
+        public string RegistrationLink { get; set; }
     }
 }

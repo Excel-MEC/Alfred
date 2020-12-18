@@ -71,6 +71,33 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Button"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextBox style="width: 100%;" @bind-value="@Event.Button" Name="Button"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Button Link"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenTextBox style="width: 100%;" @bind-value="@Event.RegistrationLink"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 align-items-center d-flex">
+            <RadzenLabel Text="Registration End Date Time*"/>
+        </div>
+        <div class="col-md-9">
+            <RadzenDatePicker ShowTime="true" style="width:100%" @bind-Value="@Event.RegistrationEndDate" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt"/>
+        </div>
+    </div>
+
 </RadzenFieldset>
 
 @code{

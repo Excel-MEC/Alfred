@@ -23,7 +23,8 @@ namespace Alfred.Client.Data
         private readonly IMapper _mapper;
         private const string Url = "/events/api/events";
 
-        public EventRepository(IApiService apiService, IStateService stateService, ICustomNotification notification, IMapper mapper)
+        public EventRepository(IApiService apiService, IStateService stateService, ICustomNotification notification,
+            IMapper mapper)
         {
             _apiService = apiService;
             _stateService = stateService;
@@ -65,7 +66,8 @@ namespace Alfred.Client.Data
             {
                 var events = await _stateService.GetEventList();
                 var eventFromRepo =
-                    await _apiService.DeleteJsonAsync<Event>(Url, new {Id = eventForDelete.Id, Name = eventForDelete.Name});
+                    await _apiService.DeleteJsonAsync<Event>(Url,
+                        new {Id = eventForDelete.Id, Name = eventForDelete.Name});
                 var deletedEvent = _mapper.Map<EventForListViewDto>(eventFromRepo);
                 var deletedEventInList = events.FirstOrDefault(x => x.Id == deletedEvent.Id);
                 events.Remove(deletedEventInList);
@@ -76,10 +78,17 @@ namespace Alfred.Client.Data
             }
         }
 
-        public async Task<List<UserForListViewDto>> Registrations(int eventId)
+        public async Task<List<RegistrationForViewDto>> Registrations(int eventId)
         {
-            var users = await _apiService.GetFromJsonAsync<List<UserForListViewDto>>($"/events/api/registration/{eventId}/users");
-            return users;
+            var registrationFromRepo = await _apiService.GetFromJsonAsync<List<RegistrationFromRepoDto>>(
+                $"/events/api/registration/{eventId}/users");
+            
+            var registrationForView = new List<RegistrationForViewDto>();
+            foreach (var registration in registrationFromRepo)
+            {
+                registrationForView.Add(_mapper.Map<RegistrationForViewDto>(registration));
+            }
+            return registrationForView;
         }
 
         private MultipartFormDataContent GetFormDataContent(DataForAddingEventDto newEvent)
@@ -106,9 +115,18 @@ namespace Alfred.Client.Data
             content.Add(new StringContent(newEvent.EventStatusId.ToString()), "EventStatusId");
             content.Add(new StringContent(newEvent.EntryFee.ToString()), "EntryFee");
             content.Add(new StringContent(newEvent.PrizeMoney.ToString()), "PrizeMoney");
-            content.Add(new StringContent(newEvent.NeedRegistration.ToString()), "NeedRegistration");
             content.Add(new StringContent(newEvent.IsTeam.ToString()), "IsTeam");
             content.Add(new StringContent(newEvent.TeamSize.ToString()), "TeamSize");
+            content.Add(new StringContent(newEvent.NeedRegistration.ToString()), "NeedRegistration");
+            if (!string.IsNullOrEmpty(newEvent.Button))
+                content.Add(new StringContent(newEvent.Button), "Button");
+            if (!string.IsNullOrEmpty(newEvent.RegistrationLink))
+                content.Add(new StringContent(newEvent.RegistrationLink), "RegistrationLink");
+            if (newEvent.RegistrationOpen != null)
+                content.Add(new StringContent(newEvent.RegistrationOpen.ToString()), "RegistrationOpen");
+            if (newEvent.RegistrationEndDate != null)
+                content.Add(new StringContent(Convert.ToDateTime(newEvent.RegistrationEndDate).ToLongDateString()),
+                    "RegistrationEndDate");
             content.Add(new StringContent(newEvent.EventHead1Id.ToString()), "EventHead1Id");
             content.Add(new StringContent(newEvent.EventHead2Id.ToString()), "EventHead2Id");
             return content;

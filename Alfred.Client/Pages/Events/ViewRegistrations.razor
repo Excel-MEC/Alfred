@@ -6,7 +6,7 @@
 <AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
     <div class="row">
         <div class="col-md-12 text-center">
-            <h1>@_event.Name</h1>
+            <h1>@_event?.Name</h1>
         </div>
     </div>
     <div class="row">
@@ -18,15 +18,18 @@
         </div>
     </div>
     <RadzenGrid @ref="@_userGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="20"
-                 AllowSorting="true" Data="@_users" TItem="UserForListViewDto">
+                 AllowSorting="true" Data="@_registrations" TItem="RegistrationForViewDto">
         <Columns>
-            <RadzenGridColumn TItem="UserForListViewDto" Property="Id" Title="Id" width="60px"/>
-            <RadzenGridColumn TItem="UserForListViewDto" Property="Name" Title="Name"/>
-            <RadzenGridColumn TItem="UserForListViewDto" Property="Email" Title="E-mail"/>
-            <RadzenGridColumn TItem="UserForListViewDto" Property="MobileNumber" Title="Phone"/>
-            <RadzenGridColumn TItem="UserForListViewDto" Title="View" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Id" Title="Id" width="100px"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="ExcelId" Title="ExcelId"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="TeamId" Title="TeamId"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="TeamName" Title="Team Name"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Name" Title="Name"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Email" Title="E-mail"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="MobileNumber" Title="Phone"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Title="View" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="data">
-                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" Click="@(args => Dialog.Open<UserCard>(data.Name, new Dictionary<string, object>() {{"User", data}}, new DialogOptions() {Width = "700px"}))">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" Click="@(args => Dialog.Open<UserCard>(data.Name, new Dictionary<string, object>() {{"User", Mapper.Map<UserForListViewDto>(data)}}, new DialogOptions() {Width = "700px"}))">
                     </RadzenButton>
                 </Template>
             </RadzenGridColumn>
@@ -43,17 +46,18 @@
 
     [Parameter]
     public int Id { get; set; }
-    RadzenGrid<UserForListViewDto> _userGrid;
+
+    RadzenGrid<RegistrationForViewDto> _userGrid;
     EventForListViewDto _event;
 
-    List<UserForListViewDto> _users = new List<UserForListViewDto>();
+    List<RegistrationForViewDto> _registrations = new List<RegistrationForViewDto>();
 
     async Task Refresh()
     {
         _loading = true;
-        var _events = await State.GetEventList();
-        _event = _events.FirstOrDefault(x => x.Id == Id);
-        _users = await EventRepo.Registrations(Id);
+        var events = await State.GetEventList();
+        _event = events.FirstOrDefault(x => x.Id == Id);
+        _registrations = await EventRepo.Registrations(Id);
         _loading = false;
     }
 
@@ -64,7 +68,7 @@
 
     async Task ExportCsv()
     {
-        await Services.ExportExcelAsync(_users, $"Event-{Id}-Registrations");
+        await Services.ExportExcelAsync(_registrations, $"Event-{Id}-Registrations");
     }
 
 }

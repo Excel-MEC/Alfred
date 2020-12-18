@@ -19,13 +19,17 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6 align-items-center d-flex">
+        <div class="col-md-4 align-items-center d-flex">
             <RadzenCheckBox class="bool" @bind-Value="@Event.NeedRegistration" TValue="bool"/>
             <RadzenLabel Text="Need Registration"/>
         </div>
-        <div class="col-md-6 align-items-center d-flex">
+        <div class="col-md-4 align-items-center d-flex">
             <RadzenCheckBox class="bool" @bind-Value="@Event.IsTeam" TValue="bool"/>
             <RadzenLabel Text="Is Team"/>
+        </div>
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenCheckBox class="bool" @bind-Value="@Event.RegistrationOpen" TValue="bool?"/>
+            <RadzenLabel Text="Registration Open?"/>
         </div>
     </div>
     <div class="row">
