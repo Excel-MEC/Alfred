@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int ExcelId { get; set; }
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
         public string TeamName { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }

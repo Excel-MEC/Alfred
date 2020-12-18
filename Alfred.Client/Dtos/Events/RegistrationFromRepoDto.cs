@@ -7,7 +7,7 @@ namespace Alfred.Client.Dtos.Events
     {
         public int Id { get; set; }
         public int ExcelId { get; set; }
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
         public Team Team { get; set; }
         public UserForListViewDto User { get; set; }
     }

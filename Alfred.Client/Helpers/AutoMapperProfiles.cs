@@ -21,7 +21,7 @@ namespace Alfred.Client.Helpers
             CreateMap<Event, DataForAddingEventDto>()
                 .ForMember(dest => dest.Icon, opt => opt.ResolveUsing((src) => new CustomFile()));
             CreateMap<RegistrationFromRepoDto, RegistrationForViewDto>()
-                .ForMember(dest => dest.TeamName, opt => opt.ResolveUsing(src => src.Team.Name))
+                .ForMember(dest => dest.TeamName, opt => opt.ResolveUsing(src => src.Team?.Name))
                 .ForMember(dest => dest.Name, opt => opt.ResolveUsing(src => src.User.Name))
                 .ForMember(dest => dest.Email, opt => opt.ResolveUsing(src => src.User.Email))
                 .ForMember(dest => dest.Role, opt => opt.ResolveUsing(src => src.User.Role))
