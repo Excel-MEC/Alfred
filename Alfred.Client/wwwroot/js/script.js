@@ -4,7 +4,10 @@
     } else if (event.data === null) {
         localStorage.setItem('refresh_token', null);
         localStorage.setItem('access_token', null);
-        window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
+        if (window.location.hostname === "alfred.excelmec.org")
+            window.location.href = "https://accounts.excelmec.org/auth/login?redirect_to=" + window.location;
+        else
+            window.location.href = "https://staging.accounts.excelmec.org/auth/login?redirect_to=" + window.location;
     }
 }
 
@@ -16,13 +19,13 @@ window.reload = function () {
 window.getJwt = function getJwt() {
     return getCookie("access_token");
 }
-window.setJwt = function setJwt(newToken){
+window.setJwt = function setJwt(newToken) {
     var d = new Date();
     d.setTime(d.getTime() + 780000);
-    var expires = "expires="+ d.toUTCString();
+    var expires = "expires=" + d.toUTCString();
     document.cookie = "access_token" + "=" + newToken + ";" + expires + ";path=/";
 }
-window.getRefreshToken = function getRefreshToken(){
+window.getRefreshToken = function getRefreshToken() {
     return localStorage.getItem("refresh_token");
 }
 
@@ -39,7 +42,7 @@ function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) === ' ') {
             c = c.substring(1);
@@ -50,3 +53,11 @@ function getCookie(cname) {
     }
     return "";
 }
+
+var iframe = document.createElement('iframe');
+iframe.style.display = "none";
+if (window.location.hostname === "alfred.excelmec.org")
+iframe.src = "https://accounts.excelmec.org/auth/authorize";
+else
+    iframe.src = "https://staging.accounts.excelmec.org/auth/authorize";
+document.body.appendChild(iframe);

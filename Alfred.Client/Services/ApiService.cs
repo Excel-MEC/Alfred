@@ -18,13 +18,15 @@ namespace Alfred.Client.Services
     public class ApiService : IApiService
     {
         private readonly IJSRuntime _jsRuntime;
+        private readonly NavigationManager _navigationManager;
         private ICustomNotification _notification;
         public HttpStatusCode JwtExpiry => (HttpStatusCode) Enum.Parse(typeof(HttpStatusCode), "455", true);
 
-        public ApiService(IJSRuntime jsRuntime, ICustomNotification notification)
+        public ApiService(IJSRuntime jsRuntime, ICustomNotification notification, NavigationManager navigationManager)
         {
             _jsRuntime = jsRuntime;
             _notification = notification;
+            _navigationManager = navigationManager;
         }
 
         public async Task<HttpClient> Client(string header = null)
@@ -62,13 +64,13 @@ namespace Alfred.Client.Services
             return await SendAsync(request);
         }
 
-        public async Task<TItem> PostJsonAsync<TItem>(string url, object content, bool notification =true)
+        public async Task<TItem> PostJsonAsync<TItem>(string url, object content, bool notification = true)
         {
             var response = await PostJsonAsync(url, content, notification);
             return JsonConvert.DeserializeObject<TItem>(response);
         }
 
-        public async Task<string> PostJsonAsync(string url, object content, bool notification =true)
+        public async Task<string> PostJsonAsync(string url, object content, bool notification = true)
         {
             var request = new HttpRequestMessage
             {
@@ -208,12 +210,22 @@ namespace Alfred.Client.Services
             if (url.StartsWith("/accounts/"))
             {
                 var newUrl = url.Replace("/accounts", "");
+                if (_navigationManager.BaseUri == "https://accounts.excelmec.org/")
+                    return new Uri($"https://accounts.excelmec.org{newUrl}");
                 return new Uri($"https://staging.accounts.excelmec.org{newUrl}");
             }
             else if (url.StartsWith("/events/"))
             {
-                var newUrl = url.Replace("/events/api", "/api");
-                return new Uri($"https://staging.events.excelmec.org{newUrl}");
+                if (_navigationManager.BaseUri == "https://accounts.excelmec.org/")
+                {
+                    var newUrl = url.Replace("/events/api", "");
+                    return new Uri($"https://events.excelmec.org{newUrl}");
+                }
+                else
+                {
+                    var newUrl = url.Replace("/events/api", "/api");
+                    return new Uri($"https://staging.events.excelmec.org{newUrl}");
+                }
             }
             else
             {

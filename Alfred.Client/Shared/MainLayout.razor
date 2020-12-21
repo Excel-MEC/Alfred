@@ -1,6 +1,4 @@
-﻿@using Alfred.Client.Models.Components
-@using Alfred.Client.Services.Interfaces
-@inherits Microsoft.AspNetCore.Components.LayoutComponentBase
+﻿@inherits Microsoft.AspNetCore.Components.LayoutComponentBase
 @inject IAuthService AuthService
 @inject IJSRuntime JsRuntime
 @inject NavigationManager Navigation
@@ -65,6 +63,8 @@
 
     protected override void OnInitialized()
     {
+        if (Navigation.BaseUri == "https://accounts.excelmec.org/")
+            _accountsUrl = "https://accounts.excelmec.org";
         _logOutUrl = _accountsUrl + "/auth/logout?redirect_to=" + Navigation.Uri;
     }
 
