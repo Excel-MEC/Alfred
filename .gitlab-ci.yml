@@ -1,6 +1,8 @@
 stages:
   - build
   - deploy
+  - prod-build
+  - prod-deploy
 
 build site:
   image: mcr.microsoft.com/dotnet/core/sdk:3.1
