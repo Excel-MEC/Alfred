@@ -4,6 +4,8 @@
     } else if (event.data === null) {
         localStorage.setItem('refresh_token', null);
         localStorage.setItem('access_token', null);
+        var expires = new Date(0).toUTCString();
+        document.cookie = "access_token" + "=" + ";" + expires + ";path=/";
         if (window.location.hostname === "alfred.excelmec.org")
             window.location.href = "https://accounts.excelmec.org/auth/login?redirect_to=" + window.location;
         else
@@ -57,7 +59,7 @@ function getCookie(cname) {
 var iframe = document.createElement('iframe');
 iframe.style.display = "none";
 if (window.location.hostname === "alfred.excelmec.org")
-iframe.src = "https://accounts.excelmec.org/auth/authorize";
+    iframe.src = "https://accounts.excelmec.org/auth/authorize";
 else
     iframe.src = "https://staging.accounts.excelmec.org/auth/authorize";
 document.body.appendChild(iframe);

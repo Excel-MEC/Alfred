@@ -210,13 +210,13 @@ namespace Alfred.Client.Services
             if (url.StartsWith("/accounts/"))
             {
                 var newUrl = url.Replace("/accounts", "");
-                if (_navigationManager.BaseUri == "https://accounts.excelmec.org/")
+                if (_navigationManager.BaseUri == "https://alfred.excelmec.org/")
                     return new Uri($"https://accounts.excelmec.org{newUrl}");
                 return new Uri($"https://staging.accounts.excelmec.org{newUrl}");
             }
             else if (url.StartsWith("/events/"))
             {
-                if (_navigationManager.BaseUri == "https://accounts.excelmec.org/")
+                if (_navigationManager.BaseUri == "https://alfred.excelmec.org/")
                 {
                     var newUrl = url.Replace("/events/api", "");
                     return new Uri($"https://events.excelmec.org{newUrl}");

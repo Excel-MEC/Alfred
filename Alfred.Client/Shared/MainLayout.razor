@@ -63,7 +63,7 @@
 
     protected override void OnInitialized()
     {
-        if (Navigation.BaseUri == "https://accounts.excelmec.org/")
+        if (Navigation.BaseUri == "https://alfred.excelmec.org/")
             _accountsUrl = "https://accounts.excelmec.org";
         _logOutUrl = _accountsUrl + "/auth/logout?redirect_to=" + Navigation.Uri;
     }
