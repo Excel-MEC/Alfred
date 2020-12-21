@@ -37,7 +37,7 @@ production build site:
   artifacts:
     expire_in: 1 week
     paths:
-      - ./publish
+      - ./publish-prod
   only:
     - prod@excel-mec/Alfred
 
