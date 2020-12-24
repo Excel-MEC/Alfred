@@ -1,6 +1,8 @@
 stages:
   - build
   - deploy
+  - prod-build
+  - prod-deploy
 
 build site:
   image: mcr.microsoft.com/dotnet/core/sdk:3.1
@@ -24,3 +26,27 @@ deploy:
     - npx netlify deploy --prod --dir ./publish/wwwroot --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
   only:
     - master@excel-mec/Alfred
+
+production build site:
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  stage: prod-build
+  script:
+    - dotnet build "./Alfred.Client/Alfred.Client.csproj" -c Release -o ./build
+    - dotnet publish "./Alfred.Client/Alfred.Client.csproj" -c Release -o ./publish-prod
+    - echo "/*   /index.html   200" > ./publish-prod/wwwroot/_redirects
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ./publish-prod
+  only:
+    - prod@excel-mec/Alfred
+
+production deploy:
+  image: node:latest
+  stage: prod-deploy
+  script:
+    - npm i -g netlify-cli
+    - npx netlify deploy --prod --dir ./publish-prod/wwwroot --site $PRODUCTION_NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+  only:
+    - prod@excel-mec/Alfred
+
