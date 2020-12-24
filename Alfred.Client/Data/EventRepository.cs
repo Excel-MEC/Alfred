@@ -109,7 +109,7 @@ namespace Alfred.Client.Data
                 content.Add(new StringContent(newEvent.Rules), "Rules");
             content.Add(new StringContent(newEvent.Venue), "Venue");
             content.Add(new StringContent(newEvent.Day.ToString()), "Day");
-            content.Add(new StringContent(newEvent.Datetime.ToLongDateString()), "Datetime");
+            content.Add(new StringContent(newEvent.Datetime.ToString("yyyy-MM-dd HH:mm:ss")), "Datetime");
             content.Add(new StringContent(newEvent.NumberOfRounds.ToString()), "NumberOfRounds");
             content.Add(new StringContent(newEvent.CurrentRound.ToString()), "CurrentRound");
             content.Add(new StringContent(newEvent.EventStatusId.ToString()), "EventStatusId");
@@ -125,7 +125,7 @@ namespace Alfred.Client.Data
             if (newEvent.RegistrationOpen != null)
                 content.Add(new StringContent(newEvent.RegistrationOpen.ToString()), "RegistrationOpen");
             if (newEvent.RegistrationEndDate != null)
-                content.Add(new StringContent(Convert.ToDateTime(newEvent.RegistrationEndDate).ToLongDateString()),
+                content.Add(new StringContent(Convert.ToDateTime(newEvent.RegistrationEndDate).ToString("yyyy-MM-dd HH:mm:ss")),
                     "RegistrationEndDate");
             content.Add(new StringContent(newEvent.EventHead1Id.ToString()), "EventHead1Id");
             content.Add(new StringContent(newEvent.EventHead2Id.ToString()), "EventHead2Id");
