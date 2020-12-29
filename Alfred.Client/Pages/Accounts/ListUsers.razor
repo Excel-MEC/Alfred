@@ -44,6 +44,12 @@
             <RadzenGridColumn TItem="UserForListViewDto" Property="Name" Title="Name"/>
             <RadzenGridColumn TItem="UserForListViewDto" Property="Email" Title="E-mail"/>
             <RadzenGridColumn TItem="UserForListViewDto" Property="MobileNumber" Title="Phone"/>
+            
+            <RadzenGridColumn TItem="UserForListViewDto" Context="data" Title="View" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <Template Context="data">
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="visibility" Size="ButtonSize.Small" Click="@(args => Dialog.Open<UserCard>("Add Event Head",new Dictionary<string, object>() { { "User", data }} , new DialogOptions() {Width = "700px"}))"/>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
     @if (_loading)

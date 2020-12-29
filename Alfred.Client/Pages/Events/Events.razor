@@ -33,7 +33,11 @@
             </RadzenGridColumn>
             <RadzenGridColumn TItem="EventForListViewDto" Property="NeedRegistration" Title="Need Registration"/>
             <RadzenGridColumn TItem="EventForListViewDto" Property="Day" Title="Day"/>
-            <RadzenGridColumn TItem="EventForListViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false"/>
+            <RadzenGridColumn TItem="EventForListViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false">
+                    <Template Context="data">
+                        @data.Datetime.ToString("dd-MM-yyyy hh:mm tt")
+                    </Template>
+            </RadzenGridColumn>
             <RadzenGridColumn TItem="EventForListViewDto" Context="data" Title="View" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="data">
                     <a href=@($"/Events/{data.Id}")>
