@@ -1,0 +1,67 @@
+﻿@using Alfred.Client.Dtos.Schedule
+@inject IScheduleRepository ScheduleRepo
+<div class="row">
+    <div class="col-md-12">
+        <h3>Day @(Day)</h3>
+        <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="8"
+                    AllowSorting="true" Data="@Schedule" TItem="EventForScheduleViewDto">
+
+            <Columns>
+                <RadzenGridColumn TItem="EventForScheduleViewDto" Property="Id" Title="Event Id"/>
+                <RadzenGridColumn TItem="EventForScheduleViewDto" Property="Name" Title="Event Name"/>
+                <RadzenGridColumn TItem="EventForScheduleViewDto" Property="RoundId" Title="Round Id"/>
+                <RadzenGridColumn TItem="EventForScheduleViewDto" Property="Round" Title="Round"/>
+                <RadzenGridColumn TItem="EventForScheduleViewDto" Property="Datetime" Title="DateTime" Filterable="false" Sortable="false">
+                    <Template Context="data">
+                        @data.Datetime.ToString("dd-MM-yyyy hh:mm tt")
+                    </Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="EventForScheduleViewDto" Property="Delete" Title="Delete" Filterable="false" Sortable="false" Width="70px">
+                    <Template Context="data">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(async highlight => await ShowConfirmDialogue(data))">
+                        </RadzenButton>
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
+    </div>
+</div>
+
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+@code{
+
+    [Parameter]
+    public int Day { get; set; }
+
+    [Parameter]
+    public List<EventForScheduleViewDto> Schedule { get; set; }
+
+    private bool _loading = false;
+
+
+    async Task DeleteRow(EventForScheduleViewDto eventForSchedule, DialogService ds)
+    {
+        _loading = true;
+        ds.Close(true);
+        Console.WriteLine(eventForSchedule.RoundId);
+        var dataForDeletingSchedule = new DataForDeletingScheduleDto() {EventId = eventForSchedule.Id, RoundId = eventForSchedule.RoundId};
+        await ScheduleRepo.DeleteSchedule(dataForDeletingSchedule);
+        _loading = false;
+    }
+
+    async Task ShowConfirmDialogue(EventForScheduleViewDto eventForScheduleView) => await Dialog.OpenAsync("Alert", ds =>
+        @<RadzenCard Style="padding: 20px;">
+            <p Style="margin-bottom: 10px;">Are you sure you want to delete?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" Click="async () => await DeleteRow(eventForScheduleView, ds)" Style="margin-bottom: 10px; width: 150px"/>
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+                </div>
+            </div>
+        </RadzenCard>);
+
+}

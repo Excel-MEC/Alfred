@@ -1,0 +1,47 @@
+﻿@page "/Events/Schedule"
+@using Alfred.Client.Dtos.Schedule
+@using Alfred.Client.Pages.Schedule.Components
+@inject IScheduleRepository ScheduleRepo
+
+
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
+    <div class="row">
+        <div class="col-md-12 text-right mb-2">
+            <RadzenButton Text="Add Schedule" Click="@(args => Dialog.Open<AddSchedule>("Add Schedule", null, new DialogOptions() {Width = "700px"}))"/>
+            <RadzenButton Click="@(async () => await Reload(true))" Icon="cached" Style="margin-bottom: 20px; width: 80px"/>
+        </div>
+    </div>
+
+    @{
+        foreach (var schedule in _schedules)
+        {
+            <ScheduleList Day="@schedule.Day" Schedule="@schedule.Events"></ScheduleList>
+        }
+    }
+
+</AuthorizedView>
+
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+
+@code {
+    List<ScheduleDto> _schedules = new List<ScheduleDto>();
+    bool _loading = false;
+
+    async Task Reload(bool refresh = false)
+    {
+        _loading = true;
+        _schedules = await ScheduleRepo.GetSchedule();
+        _loading = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Reload();
+        State.StateChanged += StateHasChanged;
+    }
+
+}
