@@ -93,7 +93,7 @@
             <RadzenLabel Text="Registration End Date"/>
         </div>
         <div class="col-md-9 large-text">
-            @Event.RegistrationEndDate
+            @Event.RegistrationEndDate?.ToString("dd-MM-yyyy hh:mm tt")
         </div>
     </div>
 
