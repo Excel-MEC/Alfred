@@ -1,0 +1,126 @@
+﻿@using Alfred.Client.Dtos.Events
+@using Alfred.Client.Dtos.Schedule
+@inject IScheduleRepository ScheduleRepo
+
+
+<RadzenTemplateForm Data="@_schedule" Submit="@(async (DataForAddingScheduleDto args) => { await Submit(args); })">
+    <div class="row">
+        <div class="col-md-12">
+            <RadzenFieldset Text="Data">
+                <div class="row">
+                    <div class="col-md-3">
+                        <RadzenLabel Text="Event"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenDropDownDataGrid TValue="int"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                AllowFiltering="true" AllowClear="true"
+                                                Data="@_events"
+                                                Value="@_schedule.EventId"
+                                                TextProperty="Name" ValueProperty="Id"
+                                                Style="width:100%"
+                                                PlaceHolder="Select"
+                                                Change="@(args => { _schedule.EventId = (int) args; })">
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="Id" Title="Id" width="40px"/>
+                                <RadzenDropDownDataGridColumn Property="Name" Title="Name"/>
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Round"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox style="width: 100%;" @bind-value="@_schedule.Round"/>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Round No"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenNumeric style="width:100%" @bind-Value="@_schedule.RoundId" Placeholder="Enter Round No"/>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Day"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenNumeric style="width:100%" @bind-Value="@_schedule.Day" Placeholder="Enter Excel Day"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 align-items-center d-flex">
+                        <RadzenLabel Text="Date Time"/>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenDatePicker ShowTime="true" style="width:100%" Name="EventDateTime" @bind-Value="@_schedule.Datetime" HourFormat="12" DateFormat="dd-MM-yyyy hh:mm tt"/>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save"/>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</RadzenTemplateForm>
+
+@if (_loading)
+{
+    <div class="spinner"></div>
+}
+
+<style>
+    .row{
+        margin-top: 10px;
+    }
+</style>
+
+@code{
+    DataForAddingScheduleDto _schedule = new DataForAddingScheduleDto();
+    List<EventForListViewDto> _events = new List<EventForListViewDto>();
+    bool _loading = true;
+    //
+    protected override async Task OnInitializedAsync()
+    {
+        _events = await State.GetEventList();
+        _loading = false;
+    }
+
+
+    async Task Submit(DataForAddingScheduleDto schedule)
+    {
+        _loading = true;
+        try
+        {
+            await ScheduleRepo.AddSchedule(schedule);
+            State.StateChanged.Invoke();
+        }
+        catch
+        {
+            Notification.Error("Somthing went wrong");
+        }
+        Cancel();
+        _loading = false;
+    }
+
+    void Cancel()
+    {
+        _schedule = new DataForAddingScheduleDto();
+        Dialog.Close();
+    }
+
+
+}
