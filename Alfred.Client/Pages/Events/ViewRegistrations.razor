@@ -10,10 +10,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <RadzenButton Click="@(async () => await ExportCsv())" Icon="get_app" Text="Download"/>
+        <div class="col-md-3 mb-2">
+                <a href=@($"/Events/{_event.Id}")>
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="navigate_before" Text="Back"/>
+                </a>
         </div>
-        <div class="col-md-6 text-right mb-2">
+        <div class="col-md-9 mb-2 text-right">
+            <RadzenButton Click="@(async () => await ExportCsv())" Icon="get_app" Text="Download"/>
             <RadzenButton Click="@(async () => await Refresh())" Icon="cached"/>
         </div>
     </div>
