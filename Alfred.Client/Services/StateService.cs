@@ -17,6 +17,7 @@ namespace Alfred.Client.Services
         private List<EventForListViewDto> EventsList { get; set; }
         private List<EventHead> EventHeads { get; set; }
         private List<Highlight> Highlights { get; set; }
+        private List<Result> Results { get; set; }
         private Constants Constants { get; set; }
         private List<StaffForListViewDto> Staffs { get; set; }
         public Action StateChanged { get; set; }

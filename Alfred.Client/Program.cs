@@ -41,6 +41,7 @@ namespace Alfred.Client
             services.AddSingleton<IEventHeadRepository, EventHeadRepository>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+            services.AddSingleton<IResultRepository, ResultRepository>();
             services.AddSingleton<SharedServices>();
             services.AddSingleton<NotificationService>();
             services.AddScoped<DialogService>();
