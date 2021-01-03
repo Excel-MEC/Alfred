@@ -10,10 +10,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <RadzenButton Click="@(async () => await ExportCsv())" Icon="get_app" Text="Download"/>
+        <div class="col-md-3 mb-2">
+                <a href=@($"/Events/{_event.Id}")>
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="navigate_before" Text="Back"/>
+                </a>
         </div>
-        <div class="col-md-6 text-right mb-2">
+        <div class="col-md-9 mb-2 text-right">
+            <RadzenButton Click="@(async () => await ExportCsv())" Icon="get_app" Text="Download"/>
             <RadzenButton Click="@(async () => await Refresh())" Icon="cached"/>
         </div>
     </div>
@@ -21,10 +24,10 @@
                  AllowSorting="true" Data="@_registrations" TItem="RegistrationForViewDto">
         <Columns>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="Id" Title="Id" width="100px"/>
-            <RadzenGridColumn TItem="RegistrationForViewDto" Property="ExcelId" Title="ExcelId"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="ExcelId" Title="ExcelId"/>            
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Name" Title="Name"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="TeamId" Title="TeamId"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="TeamName" Title="Team Name"/>
-            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Name" Title="Name"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="Email" Title="E-mail"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="MobileNumber" Title="Phone"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Title="View" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">

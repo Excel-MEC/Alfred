@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Alfred.Client.Dtos.Accounts;
 using Alfred.Client.Dtos.Events;
+using Alfred.Client.Dtos.Results;
 using Alfred.Client.Extensions;
 using Alfred.Client.Models;
 using Alfred.Client.Models.Components;
@@ -18,6 +19,8 @@ namespace Alfred.Client.Helpers
             CreateMap<UserForListViewDto, StaffForListViewDto>()
                 .ForMember(dest => dest.Role, opt => opt.ResolveUsing(src => src.Role.Split(",")));
             CreateMap<Event, EventForListViewDto>();
+            CreateMap<ResultsForViewDto, Result>();
+            CreateMap<Result, ResultsForViewDto>();
             CreateMap<Event, DataForAddingEventDto>()
                 .ForMember(dest => dest.Icon, opt => opt.ResolveUsing((src) => new CustomFile()));
             CreateMap<RegistrationFromRepoDto, RegistrationForViewDto>()
