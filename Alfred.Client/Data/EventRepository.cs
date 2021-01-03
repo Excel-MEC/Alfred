@@ -46,7 +46,7 @@ namespace Alfred.Client.Data
             }
 
             var content = GetFormDataContent(newEvent);
-            var eventFromServer = await _apiService.PostFormAsync<Event>("/events/api/events", content);
+            var eventFromServer = await _apiService.PostFormAsync<Event>("events/api/events", content);
             newEvent.Icon.Data?.Dispose();
 
             return eventFromServer;
@@ -81,7 +81,7 @@ namespace Alfred.Client.Data
         public async Task<List<RegistrationForViewDto>> Registrations(int eventId)
         {
             var registrationFromRepo = await _apiService.GetFromJsonAsync<List<RegistrationFromRepoDto>>(
-                $"/events/api/registration/{eventId}/users");
+                $"events/api/registration/{eventId}/users");
             
             var registrationForView = new List<RegistrationForViewDto>();
             foreach (var registration in registrationFromRepo)
@@ -90,6 +90,7 @@ namespace Alfred.Client.Data
             }
             return registrationForView;
         }
+        
 
         private MultipartFormDataContent GetFormDataContent(DataForAddingEventDto newEvent)
         {

@@ -1,0 +1,183 @@
+@page "/Events/{Id:int}/Results"
+@using Alfred.Client.Dtos.Accounts
+@using Alfred.Client.Dtos.Results
+@using Alfred.Client.Dtos.Events
+@using Alfred.Client.Pages.Result.Components
+@inject IResultRepository ResultRepo
+
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>@_event?.Name</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-2">
+                <a href=@($"/Events/{_event.Id}")>
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="navigate_before" Text="Back"/>
+                </a>
+        </div>
+        <div class="col-md-9 mb-2 text-right">
+            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}")>    
+                    <RadzenButton Text="Add Result" Click="@(args => Dialog.Open<AddResult>("Add Result", new Dictionary<string, object>() { { "EventId", Id}}, new DialogOptions() {Width = "700px"}))"/>            
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Text="Delete All" Size="ButtonSize.Medium" Click="@(async highlight => await ShowConfirmDialogue(_event.Id))">
+                    </RadzenButton>                
+            </RestrictedView>
+            <RadzenButton Click="@(async () => await ExportCsv())" Icon="get_app" Text="Download" Size="ButtonSize.Medium" />
+            <RadzenButton Click="@(async () => await Refresh())" Icon="cached"/>
+        </div>
+    </div>
+    <RadzenGrid @ref="@_resultGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="true" PageSize="20"
+                 AllowSorting="true" Data="@_results" TItem="ResultsForViewDto">
+        <Columns>
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="Id" Title="Id" width="100px"/>
+
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="ExcelId" Title="ExcelId">  
+                <EditTemplate Context="singleResult">
+                        <RadzenNumeric @bind-Value="singleResult.ExcelId" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="Name" Title="Name">  
+                <EditTemplate Context="singleResult">
+                        <RadzenTextBox @bind-Value="singleResult.Name" Style="width:100%" />                        
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="Position" Title="Position">
+                <EditTemplate Context="singleResult">
+                        <RadzenNumeric @bind-Value="singleResult.Position" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="TeamId" Title="TeamId">   
+                <EditTemplate Context="singleResult">
+                        <RadzenNumeric @bind-Value="singleResult.Position" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="TeamName" Title="Team Name">
+                <EditTemplate Context="singleResult">
+                        <RadzenTextBox @bind-Value="singleResult.TeamName" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            
+            <RadzenGridColumn TItem="ResultsForViewDto" Property="TeamMembers" Title="TeamMembers">
+                <EditTemplate Context="singleResult">
+                        <RadzenTextBox @bind-Value="singleResult.TeamMembers" Style="width:100%" />
+                </EditTemplate>
+            </RadzenGridColumn>
+
+            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}")>
+                <RadzenGridColumn TItem="ResultsForViewDto" Context="data" Title="Edit" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                    <Template Context="singleResult">
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(singleResult))">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="singleResult">
+                        <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(singleResult))">
+                        </RadzenButton>
+                        <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(singleResult))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="ResultsForViewDto" Title="Delete" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                    <Template Context="data">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(async highlight => await ShowConfirmDialogue(data))">
+                        </RadzenButton>
+                    </Template>
+                </RadzenGridColumn>
+            </RestrictedView>
+
+        </Columns> 
+    </RadzenGrid>
+    @if (_loading)
+    {
+        <div class="spinner"></div>
+    }
+</AuthorizedView>
+
+@code{
+    bool _loading = false;
+    [Parameter]
+    public int Id { get; set; }   
+
+    RadzenGrid<ResultsForViewDto> _resultGrid;
+    EventForListViewDto _event;
+
+    List<ResultsForViewDto> _results = new List<ResultsForViewDto>();
+
+    async Task Refresh()
+    {
+        _loading = true;
+        var events = await State.GetEventList();
+        _event = events.FirstOrDefault(x => x.Id == Id);
+        _results = await ResultRepo.GetResults(Id);
+        _loading = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+        State.StateChanged += StateHasChanged;
+    }
+    async Task DeleteRow(ResultsForViewDto result, DialogService ds)
+    {
+        _loading = true;
+        ds.Close(true);
+        await ResultRepo.DeleteResult(result);
+        _loading = false;
+    }
+
+    async Task DeleteAll(int eventId, DialogService ds)
+    {
+        _loading = true;
+        ds.Close(true);
+        await ResultRepo.DeleteAllResult(eventId);
+        _loading = false;
+    }    
+
+    async Task ShowConfirmDialogue(ResultsForViewDto result) => await Dialog.OpenAsync("Alert", ds =>
+        @<RadzenCard Style="padding: 20px;">
+            <p Style="margin-bottom: 10px;">Are you sure you want to delete?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" Click="async () => await DeleteRow(result, ds)" Style="margin-bottom: 10px; width: 150px"/>
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+                </div>
+            </div>
+        </RadzenCard>);
+
+    async Task ShowConfirmDialogue(int eventId) => await Dialog.OpenAsync("Alert", ds =>
+        @<RadzenCard Style="padding: 20px;">
+            <p Style="margin-bottom: 10px;">Are you sure you want to delete?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" Click="async () => await DeleteAll(eventId, ds)" Style="margin-bottom: 10px; width: 150px"/>
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+                </div>
+            </div>
+        </RadzenCard>);
+
+    void SaveRow(ResultsForViewDto result)
+    {        
+        _resultGrid.UpdateRow(result);
+        ResultRepo.UpdateResult(result);
+    }
+
+    void EditRow(ResultsForViewDto result)
+    {        
+        _resultGrid.EditRow(result); 
+    }
+
+    void CancelEdit(ResultsForViewDto result)
+    {
+        _resultGrid.CancelEditRow(result);
+    }
+
+    async Task ExportCsv()
+    {
+        await Services.ExportExcelAsync(_results, $"Event-{Id}-Results");
+    }
+
+}
