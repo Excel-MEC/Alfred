@@ -5,7 +5,7 @@
 @using Alfred.Client.Pages.Result.Components
 @inject IResultRepository ResultRepo
 
-<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor},{Roles.Staff}")>
+<AuthorizedView Role=@($"{Roles.Admin},{Roles.Core},{Roles.Editor}")>
     <div class="row">
         <div class="col-md-12 text-center">
             <h1>@_event?.Name</h1>
@@ -18,7 +18,7 @@
                 </a>
         </div>
         <div class="col-md-9 mb-2 text-right">
-            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}")>    
+            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}, {Roles.Core}")>    
                     <RadzenButton Text="Add Result" Click="@(args => Dialog.Open<AddResult>("Add Result", new Dictionary<string, object>() { { "EventId", Id}}, new DialogOptions() {Width = "700px"}))"/>            
                     <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Text="Delete All" Size="ButtonSize.Medium" Click="@(async highlight => await ShowConfirmDialogue(_event.Id))">
                     </RadzenButton>                
@@ -68,7 +68,7 @@
                 </EditTemplate>
             </RadzenGridColumn>
 
-            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}")>
+            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}, {Roles.Core}")>
                 <RadzenGridColumn TItem="ResultsForViewDto" Context="data" Title="Edit" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                     <Template Context="singleResult">
                         <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(singleResult))">
@@ -81,6 +81,8 @@
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenGridColumn>
+            </RestrictedView>
+            <RestrictedView Role=@($"{Roles.Admin},{Roles.Editor}")>
                 <RadzenGridColumn TItem="ResultsForViewDto" Title="Delete" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                     <Template Context="data">
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(async highlight => await ShowConfirmDialogue(data))">
