@@ -30,6 +30,8 @@
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="TeamName" Title="Team Name"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="Email" Title="E-mail"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Property="MobileNumber" Title="Phone"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Category" Title="Category"/>
+            <RadzenGridColumn TItem="RegistrationForViewDto" Property="Institution" Title="Institution"/>
             <RadzenGridColumn TItem="RegistrationForViewDto" Title="View" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="data">
                     <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="visibility" Size="ButtonSize.Small" Click="@(args => Dialog.Open<UserCard>(data.Name, new Dictionary<string, object>() {{"User", Mapper.Map<UserForListViewDto>(data)}}, new DialogOptions() {Width = "700px"}))">

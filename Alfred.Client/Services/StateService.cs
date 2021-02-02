@@ -21,6 +21,8 @@ namespace Alfred.Client.Services
         private Constants Constants { get; set; }
         private List<StaffForListViewDto> Staffs { get; set; }
         public Action StateChanged { get; set; }
+        public Dictionary<int, Institution> Schools { get; set; }
+        public Dictionary<int, Institution> Colleges { get; set; }
 
 
         public StateService(IApiService apiService, IMapper mapper, ICustomNotification notification)
@@ -67,6 +69,30 @@ namespace Alfred.Client.Services
             foreach (var staff in staffResponse)
                 Staffs.Add(_mapper.Map<StaffForListViewDto>(staff));
             return Staffs;
+        }
+
+        public async Task<Dictionary<int, Institution>> GetSchools(bool refresh = false)
+        {
+            if (!refresh && Schools != null) return Schools;
+            var schools = await _apiService.GetFromJsonAsync<List<Institution>>("accounts/api/Institution/school/list");
+            Schools = new Dictionary<int, Institution>();
+            foreach (var school in schools)
+            {
+                Schools[school.Id] = school;
+            }
+            return Schools;
+        }
+        
+        public async Task<Dictionary<int, Institution>> GetColleges(bool refresh = false)
+        {
+            if (!refresh && Colleges != null) return Colleges;
+            var colleges = await _apiService.GetFromJsonAsync<List<Institution>>("accounts/api/Institution/college/list");
+            Colleges = new Dictionary<int, Institution>();
+            foreach (var college in colleges)
+            {
+                Colleges[college.Id] = college;
+            }
+            return Colleges;
         }
     }
 }

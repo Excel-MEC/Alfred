@@ -12,5 +12,7 @@
         public string MobileNumber { get; set; }
         public string Category { get; set; }
         public bool IsPaid { get; set; }
+        public int? InstitutionId { get; set; }
+        public string Institution { get; set; }
     }
 }

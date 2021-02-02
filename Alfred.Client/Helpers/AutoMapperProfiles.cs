@@ -33,7 +33,9 @@ namespace Alfred.Client.Helpers
                 .ForMember(dest => dest.Gender, opt => opt.ResolveUsing(src => src.User.Gender))
                 .ForMember(dest => dest.MobileNumber, opt => opt.ResolveUsing(src => src.User.MobileNumber))
                 .ForMember(dest => dest.Category, opt => opt.ResolveUsing(src => src.User.Category))
-                .ForMember(dest => dest.IsPaid, opt => opt.ResolveUsing(src => src.User.IsPaid));
+                .ForMember(dest => dest.IsPaid, opt => opt.ResolveUsing(src => src.User.IsPaid))
+                .ForMember(dest => dest.InstitutionId, opt => opt.ResolveUsing(src => src.User.InstitutionId))
+                .ForMember(dest => dest.Institution, opt => opt.ResolveUsing(src => src.User.Institution));
             CreateMap<RegistrationForViewDto, UserForListViewDto>()
                 .ForMember(dest => dest.Id, opt => opt.ResolveUsing(src => src.ExcelId));
         }
