@@ -141,12 +141,19 @@ namespace Alfred.Client.Data
             var schools = await _stateService.GetSchools();
             var colleges = await _stateService.GetColleges();
             foreach (var registration in registrations.Where(registration =>
-                registration.User != null && registration.User.Category != null && registration.User.InstitutionId != 0))
+                registration.User != null && registration.User.Category != null && registration.User.InstitutionId != 0 && registration.User.InstitutionId!=null))
             {
-                if (registration.User.Category == "college")
-                    registration.User.Institution = colleges[Convert.ToInt32(registration.User.InstitutionId)].Name;
-                if (registration.User.Category == "school")
-                    registration.User.Institution = schools[Convert.ToInt32(registration.User.InstitutionId)].Name;
+                try
+                {
+                    if (registration.User.Category == "college")
+                        registration.User.Institution = colleges[Convert.ToInt32(registration.User.InstitutionId)].Name;
+                    if (registration.User.Category == "school")
+                        registration.User.Institution = schools[Convert.ToInt32(registration.User.InstitutionId)].Name;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Institution not found");
+                }
             }
         }
     }
