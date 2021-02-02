@@ -82,12 +82,14 @@ namespace Alfred.Client.Data
         {
             var registrationFromRepo = await _apiService.GetFromJsonAsync<List<RegistrationFromRepoDto>>(
                 $"/events/api/registration/{eventId}/users");
-            
+            await AddInstitution(registrationFromRepo);
+
             var registrationForView = new List<RegistrationForViewDto>();
             foreach (var registration in registrationFromRepo)
             {
                 registrationForView.Add(_mapper.Map<RegistrationForViewDto>(registration));
             }
+
             return registrationForView;
         }
 
@@ -125,11 +127,26 @@ namespace Alfred.Client.Data
             if (newEvent.RegistrationOpen != null)
                 content.Add(new StringContent(newEvent.RegistrationOpen.ToString()), "RegistrationOpen");
             if (newEvent.RegistrationEndDate != null)
-                content.Add(new StringContent(Convert.ToDateTime(newEvent.RegistrationEndDate).ToString("yyyy-MM-dd HH:mm:ss")),
+                content.Add(
+                    new StringContent(Convert.ToDateTime(newEvent.RegistrationEndDate).ToString("yyyy-MM-dd HH:mm:ss")),
                     "RegistrationEndDate");
             content.Add(new StringContent(newEvent.EventHead1Id.ToString()), "EventHead1Id");
             content.Add(new StringContent(newEvent.EventHead2Id.ToString()), "EventHead2Id");
             return content;
+        }
+
+        private async Task AddInstitution(List<RegistrationFromRepoDto> registrations)
+        {
+            var schools = await _stateService.GetSchools();
+            var colleges = await _stateService.GetColleges();
+            foreach (var registration in registrations.Where(registration =>
+                registration.User != null && registration.User.Category != null && registration.User.InstitutionId != 0))
+            {
+                if (registration.User.Category == "college")
+                    registration.User.Institution = colleges[Convert.ToInt32(registration.User.InstitutionId)].Name;
+                if (registration.User.Category == "school")
+                    registration.User.Institution = schools[Convert.ToInt32(registration.User.InstitutionId)].Name;
+            }
         }
     }
 }

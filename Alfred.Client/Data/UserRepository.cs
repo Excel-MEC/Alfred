@@ -19,12 +19,14 @@ namespace Alfred.Client.Data
         private readonly ICustomNotification _notification;
         private readonly IApiService _apiService;
         private readonly IMapper _mapper;
+        private readonly IStateService _stateService;
 
-        public UserRepository(IApiService apiService, ICustomNotification notification, IMapper mapper)
+        public UserRepository(IApiService apiService, ICustomNotification notification, IMapper mapper, IStateService stateService)
         {
             _apiService = apiService;
             _notification = notification;
             _mapper = mapper;
+            _stateService = stateService;
         }
 
         public async Task<StaffForListViewDto> UpdateRole(DataForUpdatingRoleDto dataForUpdatingRole)
@@ -47,7 +49,30 @@ namespace Alfred.Client.Data
                 $"accounts/api/admin/users?{queryString}");
             if (!users.Data.Any())
                 _notification.Warning("No matching users");
+            await AddInstitution(users.Data);
             return users.Data;
+        }
+        
+        
+        private async Task AddInstitution(List<UserForListViewDto> users)
+        {
+            var schools = await _stateService.GetSchools();
+            var colleges = await _stateService.GetColleges();
+            foreach (var user in users.Where(user =>
+                user != null && user.Category != null && user.InstitutionId != 0 && user.InstitutionId != null))
+            {
+                try
+                {
+                    if (user.Category == "college")
+                        user.Institution = colleges[Convert.ToInt32(user.InstitutionId)].Name;
+                    if (user.Category == "school")
+                        user.Institution = schools[Convert.ToInt32(user.InstitutionId)].Name;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Instutition not found");
+                }
+            }
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Alfred.Client.Services.Interfaces
         Task<List<EventHead>> GetEventHeads(bool refresh = false);
         Task<List<Highlight>> GetHighlights(bool refresh = false);
         Task<List<StaffForListViewDto>> StaffList(bool refresh = false);
+        Task<Dictionary<int, Institution>> GetColleges(bool refresh = false);
+        Task<Dictionary<int, Institution>> GetSchools(bool refresh = false);
         public Action StateChanged { get; set; }
     }
 }
