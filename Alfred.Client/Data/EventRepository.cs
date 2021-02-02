@@ -46,7 +46,7 @@ namespace Alfred.Client.Data
             }
 
             var content = GetFormDataContent(newEvent);
-            var eventFromServer = await _apiService.PostFormAsync<Event>("/events/api/events", content);
+            var eventFromServer = await _apiService.PostFormAsync<Event>("events/api/events", content);
             newEvent.Icon.Data?.Dispose();
 
             return eventFromServer;
@@ -92,6 +92,7 @@ namespace Alfred.Client.Data
 
             return registrationForView;
         }
+        
 
         private MultipartFormDataContent GetFormDataContent(DataForAddingEventDto newEvent)
         {
